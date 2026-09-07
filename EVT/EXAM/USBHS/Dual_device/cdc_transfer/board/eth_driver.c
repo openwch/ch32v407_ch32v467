@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : eth_driver.c
 * Author             : WCH
-* Version            : V1.0.3
-* Date               : 2026/07/01
+* Version            : V1.3
+* Date               : 2026/08/25
 * Description        : eth program body.
 *********************************************************************************
 * Copyright (c) 2026 Nanjing Qinheng Microelectronics Co., Ltd.

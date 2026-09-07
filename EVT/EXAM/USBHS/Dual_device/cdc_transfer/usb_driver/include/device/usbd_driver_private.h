@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : usbd_driver_private.h
 * Author             : WCH
-* Version            : V1.2
-* Date               : 2026/05/26
+* Version            : V1.3
+* Date               : 2026/08/25
 * Description        : Usb device driver private headfile.
 *********************************************************************************
 * Copyright (c) 2026 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -24,6 +24,8 @@ extern "C" {
 #include "usb_define.h"
 #include "usb_config.h"
 #include "device/usbd_driver_public.h"
+
+#ifdef USB_DEVICE_DRIVER_EN
 
 /* @enum */
 typedef enum
@@ -81,8 +83,8 @@ typedef struct
     size_t size;
     size_t offset;
     void *buf_ptr;
-    ctrl_data_cb data_cb;
-    ctrl_status_cb status_cb;
+    usbd_ctrl_data_cb data_cb;
+    usbd_ctrl_status_cb status_cb;
     uint32_t temp_data;
     usb_req_t req;
     __attribute__((aligned(4))) uint8_t buf[64];
@@ -92,16 +94,16 @@ typedef struct
 {
     uint8_t bmRequestType;
     uint8_t bRequest;
-    ctrl_setup_cb setup;
-    ctrl_data_cb data;
-    ctrl_status_cb status;
+    usbd_ctrl_setup_cb setup;
+    usbd_ctrl_data_cb data;
+    usbd_ctrl_status_cb status;
 } usbd_req_cb_item_t;
 
 typedef struct
 {
-    ctrl_setup_cb setup;
-    ctrl_data_cb data;
-    ctrl_status_cb status;
+    usbd_ctrl_setup_cb setup;
+    usbd_ctrl_data_cb data;
+    usbd_ctrl_status_cb status;
 } usbd_itf_cb_item_t;
 
 typedef struct
@@ -110,18 +112,14 @@ typedef struct
     uint8_t feature;
     uint16_t max_size;
 
+    void *xfer_buffer;
     size_t xfer_length;
     size_t xfer_offset;
-    void *xfer_buffer;
-    data_xfer_cb xfer_cb;
+    usbd_data_xfer_cb xfer_cb;
 } usbd_endp_param_t;
 
 struct usbd_handle
 {
-    usb_bool_t enable_status;
-    usb_bool_t open_status;
-    usb_bool_t enum_status;
-
     usbd_feature_t feature;
 
     usbd_ctrl_ctx_t ctrl_ctx;
@@ -132,16 +130,13 @@ struct usbd_handle
 
     usbd_endp_param_t endp_params[2][USB_MAX_EP_NUM];
 
-    event_cb event_cbs[USBD_CB_EVENT_COUNT];
+    usbd_event_cb event_cbs[USBD_CB_EVENT_COUNT];
 
     usb_rst_e(*enable)(void);
     usb_rst_e(*disable)(void);
 
     usb_rst_e(*open)(usb_speed_e speed, usb_bool_t sof_en);
     usb_rst_e(*close)(void);
-
-    usb_rst_e(*get_event)(usbd_event_t *e);
-    usb_rst_e(*clear_event)(usbd_event_t *e);
 
     usb_rst_e(*resume)(void);
 
@@ -156,12 +151,20 @@ struct usbd_handle
     usb_rst_e(*set_endp_size)(usb_endp_t ep, size_t size);
     usb_rst_e(*set_endp_toggle)(usb_endp_t ep, endp_tog_e tog);
     usb_rst_e(*set_endp_response)(usb_endp_t ep, endp_resp_e resp);
-
-    usb_rst_e(*get_endp_buf)(usb_endp_t ep, void **buf);
-    usb_rst_e(*get_endp_size)(usb_endp_t ep, size_t *size);
-    usb_rst_e(*get_endp_toggle)(usb_endp_t ep, endp_tog_e *tog);
-    usb_rst_e(*get_endp_response)(usb_endp_t ep, endp_resp_e *resp);
 };
+
+/* @function declaration */
+
+/**
+ * @brief Usb device driver event handle.
+ *
+ * @param h Usb device driver handle object.
+ * @param e Usb device driver event object.
+ * @note This function is executed in the USB device interrupt handler.
+ */
+void usbd_event_handle(usbd_handle_t *h, usbd_event_t *e);
+
+#endif // USB_DEVICE_DRIVER_EN
 
 #ifdef __cplusplus
 }

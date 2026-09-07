@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
 * File Name          : ch32v4x7_dbgmcu.c
 * Author             : WCH
-* Version            : V1.0.1
-* Date               : 2026/03/10
+* Version            : V1.0.2
+* Date               : 2026/08/21
 * Description        : This file provides all the DBGMCU firmware functions.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -123,6 +123,7 @@ void DBGMCU_Config(uint32_t DBGMCU_Periph, FunctionalState NewState)
  *  CH32V467VET - 0x467300x0
  *  CH32V467WEU - 0x467400x1
  *  CH32V467RET - 0x467500x2
+ *  CH32V406RET - 0x467700x2
  */
 uint32_t DBGMCU_GetCHIPID( void )
 {

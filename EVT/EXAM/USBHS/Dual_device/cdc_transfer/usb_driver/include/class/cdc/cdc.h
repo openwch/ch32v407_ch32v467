@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : cdc.h
 * Author             : WCH
-* Version            : V1.2
-* Date               : 2026/05/26
+* Version            : V1.3
+* Date               : 2026/08/25
 * Description        : CDC class define.
 *********************************************************************************
 * Copyright (c) 2026 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -97,6 +97,48 @@ extern "C" {
 /* @enum */
 typedef enum
 {
+    CDC_DEVICE_MODEL_DIRECT_LINE_CONTROL_MODEL = 0x01,
+    CDC_DEVICE_MODEL_ABSTRACT_CONTROL_MODEL = 0x02,
+    CDC_DEVICE_MODEL_TELEPHONE_CONTROL_MODEL = 0x03,
+    CDC_DEVICE_MODEL_MULTI_CHANNEL_CONTROL_MODEL = 0x04,
+    CDC_DEVICE_MODEL_CAPI_CONTROL_MODEL = 0x05,
+    CDC_DEVICE_MODEL_ETHERNET_NETWORKING_CONTROL_MODEL = 0x06,
+    CDC_DEVICE_MODEL_ATM_NETWORKING_CONTROL_MODEL = 0x07,
+} cdc_dev_model_e;
+
+typedef enum
+{
+    CDC_ITF_DESC_HEADER                          = 0x00,
+    CDC_ITF_DESC_CALL_MANAGEMENT                 = 0x01,
+    CDC_ITF_DESC_ABSTRACT_CONTROL_MANAGEMENT     = 0x02,
+    CDC_ITF_DESC_DIRECT_LINE_MANAGEMENT          = 0x03,
+    CDC_ITF_DESC_TELEPHONE_RINGER                = 0x04,
+    CDC_ITF_DESC_REPORTING_CAPABILITIES          = 0x05,
+    CDC_ITF_DESC_UNION                           = 0x06,
+    CDC_ITF_DESC_COUNTRY_SELECTION               = 0x07,
+    CDC_ITF_DESC_TELEPHONE_OPERATIONAL_MODES     = 0x08,
+    CDC_ITF_DESC_USB_TERMINAL                    = 0x09,
+    CDC_ITF_DESC_NETWORK_CHANNEL                 = 0x0A,
+    CDC_ITF_DESC_PROTOCOL_UNIT                   = 0x0B,
+    CDC_ITF_DESC_EXTENSION_UNIT                  = 0x0C,
+    CDC_ITF_DESC_MULTI_CHANNEL_MANAGEMENT        = 0x0D,
+    CDC_ITF_DESC_CAPI_CONTROL_MANAGEMENT         = 0x0E,
+    CDC_ITF_DESC_ETHERNET_NETWORKING             = 0x0F,
+    CDC_ITF_DESC_ATM_NETWORKING                  = 0x10,
+    CDC_ITF_DESC_WIRELESS_HANDSET_CONTROL_MODEL  = 0x11,
+    CDC_ITF_DESC_MOBILE_DIRECT_LINE_MODEL        = 0x12,
+    CDC_ITF_DESC_MOBILE_DIRECT_LINE_MODEL_DETAIL = 0x13,
+    CDC_ITF_DESC_DEVICE_MANAGEMENT_MODEL         = 0x14,
+    CDC_ITF_DESC_OBEX                            = 0x15,
+    CDC_ITF_DESC_COMMAND_SET                     = 0x16,
+    CDC_ITF_DESC_COMMAND_SET_DETAIL              = 0x17,
+    CDC_ITF_DESC_TELEPHONE_CONTROL_MODEL         = 0x18,
+    CDC_ITF_DESC_OBEX_SERVICE_IDENTIFIER         = 0x19,
+    CDC_ITF_DESC_NCM                             = 0x1A,
+} cdc_itf_desc_subtype_e;
+
+typedef enum
+{
     CDC_CONTROL_LINE_STATE_DTR = 0x01,
     CDC_CONTROL_LINE_STATE_RTS = 0x02,
 } cdc_control_line_state_t;
@@ -121,6 +163,40 @@ typedef enum
 
 /* Start single-byte alignment */
 #pragma pack(1)
+
+typedef struct
+{
+    uint8_t bFunctionLength;
+    uint8_t bDescriptorType;
+    uint8_t bDescriptorSubtype;
+    uint16_t bcdCDC;
+} cdc_header_desc_t;
+
+typedef struct
+{
+    uint8_t bFunctionLength;
+    uint8_t bDescriptorType;
+    uint8_t bDescriptorSubtype;
+    uint8_t bmCapabilities;
+    uint8_t bDataInterface;
+} cdc_call_mgmt_desc_t;
+
+typedef struct
+{
+    uint8_t bFunctionLength;
+    uint8_t bDescriptorType;
+    uint8_t bDescriptorSubtype;
+    uint8_t bmCapabilities;
+} cdc_acm_desc_t;
+
+typedef struct
+{
+    uint8_t bFunctionLength;
+    uint8_t bDescriptorType;
+    uint8_t bDescriptorSubtype;
+    uint8_t bControlInterface;
+    uint8_t bSubordinateInterface[];
+} cdc_union_desc_t;
 
 typedef struct
 {

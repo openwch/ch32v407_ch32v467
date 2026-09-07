@@ -31,7 +31,7 @@
 
 extern VOID HalHwiInit(VOID);
 
-#define INITIAL_MSTATUS                 0x1880 //( MSTATUS_MPP | MSTATUS_MPIE | MSTATUS_FS_INITIAL)
+#define INITIAL_MSTATUS                 0x1E80 
 
 #define ALIGN_DOWN(size, align)         ((size) & ~((align) - 1))
 
@@ -55,7 +55,6 @@ LITE_OS_SEC_TEXT_MINOR VOID HalSysExit(VOID)
 
 LITE_OS_SEC_TEXT_INIT VOID *HalTskStackInit(UINT32 taskID, UINT32 stackSize, VOID *topStack)
 {
-    UINT32 index;
     UINT8 *stk = 0;
     TaskContext  *context = NULL;
 
@@ -64,17 +63,16 @@ LITE_OS_SEC_TEXT_INIT VOID *HalTskStackInit(UINT32 taskID, UINT32 stackSize, VOI
 
     stk = ((UINT8 *)topStack) + stackSize + sizeof(STACK_TYPE);
     stk = (UINT8 *)ALIGN_DOWN((uintptr_t)stk, REGBYTES);
+
     context = (TaskContext *)(stk - sizeof(TaskContext));
 
-    for (index = 1; index < sizeof(TaskContext)/ sizeof(STACK_TYPE); index ++) {
-        ((STACK_TYPE *)context)[index] = OS_TASK_STACK_INIT;
-    }
-    context->ra      = (STACK_TYPE)HalSysExit;
-    context->a0      = (STACK_TYPE)taskID;
-    context->epc     = (STACK_TYPE)OsTaskEntry;
+    (VOID)memset(context, 0, sizeof(TaskContext));
 
-    context->mstatus = INITIAL_MSTATUS;
+    context->ra      = (STACK_TYPE)HalSysExit;   
+    context->a0      = (STACK_TYPE)taskID;       
+    context->epc     = (STACK_TYPE)OsTaskEntry;  
 
+    context->mstatus = INITIAL_MSTATUS| (1UL << 13);  
 
     return (VOID *)context;
 }

@@ -38,17 +38,34 @@ static uint32_t _SysTick_Config(rt_uint32_t ticks)
 }
 
 #if defined(RT_USING_USER_MAIN) && defined(RT_USING_HEAP)
+
+#if !defined(USING_MAX_HEAP_SIZE)
 #define RT_HEAP_SIZE (1024)
 static uint32_t rt_heap[RT_HEAP_SIZE];     // heap default size: 4K(1024 * 4)
-RT_WEAK void *rt_heap_begin_get(void)
+rt_weak void *rt_heap_begin_get(void)
 {
     return rt_heap;
 }
 
-RT_WEAK void *rt_heap_end_get(void)
+rt_weak void *rt_heap_end_get(void)
 {
     return rt_heap + RT_HEAP_SIZE;
 }
+
+#else
+
+rt_weak void *rt_heap_begin_get(void)
+{
+    return HEAP_BEGIN;
+}
+rt_weak void *rt_heap_end_get(void)
+{
+    return HEAP_END ;
+}
+
+
+#endif //USING_MAX_HEAP_SIZE
+
 #endif
 
 /**
@@ -58,19 +75,23 @@ void rt_hw_board_init()
 {
     /* System Tick Configuration */
     _SysTick_Config(SystemCoreClock / RT_TICK_PER_SECOND);
+
+#if defined(RT_USING_USER_MAIN) && defined(RT_USING_HEAP)
+    rt_system_heap_init(rt_heap_begin_get(), rt_heap_end_get());
+#endif
+    /* USART driver initialization is open by default */
+#ifdef RT_USING_SERIAL
+    rt_hw_usart_init();
+#endif
+#ifdef RT_USING_CONSOLE
+    rt_console_set_device(RT_CONSOLE_DEVICE_NAME);
+#endif
     /* Call components board initial (use INIT_BOARD_EXPORT()) */
 #ifdef RT_USING_COMPONENTS_INIT
     rt_components_board_init();
 #endif
-#if defined(RT_USING_USER_MAIN) && defined(RT_USING_HEAP)
-    rt_system_heap_init(rt_heap_begin_get(), rt_heap_end_get());
-#endif
 
-#ifdef RT_USING_CONSOLE
-    rt_console_set_device(RT_CONSOLE_DEVICE_NAME);
-#endif
 }
-
 
 void SysTick_Handler(void) __attribute__((interrupt()));
 void SysTick_Handler(void)

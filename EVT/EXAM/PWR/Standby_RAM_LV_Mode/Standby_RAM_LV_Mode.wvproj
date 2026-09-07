@@ -5,10 +5,10 @@
 		"chipInfo": {
 			"vendor": "WCH",
 			"toolchain": "RISC-V",
-			"series": "CH32V205",
+			"series": "CH32V4X7",
 			"rtos": "NoneOS",
-			"mcu": "CH32V205CCT6",
-			"description": "Website: http://www.wch.cn/products/CH32V203.html?\\nROM(byte): 32K, SRAM(byte): 10K, CHIP PINS: 48, GPIO PORTS: 37.\\nWCH CH32V2 series of mainstream MCUs covers the needs of a large variety of applications in the industrial,medical and consumer markets. High performance with first-class peripherals and low-power,low-voltage operation is paired with a high level of integration at accessible prices with a simple architecture and easy-to-use tools.",
+			"mcu": "CH32V407RET",
+			"description": "ROM(byte): 256K, SRAM(byte):",
 			"link": "WCH-Link",
 			"peripheral_version": "2.2",
 			"calibrateSupport": false,
@@ -334,7 +334,7 @@
 		]
 	},
 	"flashConfig": {
-		"mcutype": "CH32V205",
+		"mcutype": "CH32V4X7",
 		"address": "0x08000000",
 		"target_path": "obj\\Standby_RAM_LV_Mode.hex",
 		"clkSpeed": "High",
@@ -408,7 +408,7 @@
 			},
 			"debugInRAM": false
 		},
-		"svdpath": "${WCH:SDK:default}/RISC-V/CH32V205/NoneOS/CH32V205xx.svd",
+		"svdpath": "${WCH:SDK:default}/RISC-V/CH32V4X7/NoneOS/CH32V4X7.svd",
 		"output": {
 			"showDebugGDBTrace": true,
 			"saveDebugOutputToFile": false,

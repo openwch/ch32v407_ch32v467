@@ -31,6 +31,17 @@
 #include "riscv_encoding.h"
 
 //#define ARCH_RISCV_FPU
+//#define ARCH_RISCV_RVV
+
+
+#ifdef ARCH_RISCV_RVV
+    #ifndef VREG_BYTES
+        #define VREG_BYTES  16
+    #endif
+    #define RVV_CSR_SIZE    (3 * 4)           
+    #define RVV_VREG_SIZE   (32 * VREG_BYTES) 
+    #define RVV_CONTEXT_SIZE (RVV_CSR_SIZE + RVV_VREG_SIZE)
+#endif
 
 #ifndef __riscv_32e
 #define portRegNum          30
@@ -166,6 +177,27 @@ HalStartToRun:
     addi    sp, sp, portFloatRegNum * FPREGBYTES
 #endif
 
+#ifdef ARCH_RISCV_RVV
+
+    addi    t0, sp, 0
+    vsetivli zero, 8, e64, m8, ta, ma
+    vle64.v v0, (t0)
+    addi    t0, t0, 64
+    vle64.v v8, (t0)
+    addi    t0, t0, 64
+    vle64.v v16, (t0)
+    addi    t0, t0, 64
+    vle64.v v24, (t0)
+
+    /* ª÷∏¥œÚ¡ø CSR */
+    lw      t0, 0(sp)          /* vcsr */
+    csrw    vcsr, t0
+    lw      t0, 4(sp)          /* vtype */
+    lw      t1, 8(sp)          /* vl */
+    vsetvl  zero, t1, t0
+    addi    sp, sp, RVV_CONTEXT_SIZE
+#endif
+
     mret
 
 
@@ -176,7 +208,30 @@ HalStartToRun:
 .align 2
 SW_Handler:
 
+#ifdef ARCH_RISCV_RVV
+
+    addi    sp, sp, -RVV_CONTEXT_SIZE
+
+    csrr    t0, vcsr
+    sw      t0, 0(sp)
+    csrr    t0, vtype
+    sw      t0, 4(sp)
+    csrr    t0, vl
+    sw      t0, 8(sp)
+
+    addi    t0, sp, 12         
+    vsetivli zero, 8, e64, m8, ta, ma
+    vse64.v v0, (t0)
+    addi    t0, t0, 64
+    vse64.v v8, (t0)
+    addi    t0, t0, 64
+    vse64.v v16, (t0)
+    addi    t0, t0, 64
+    vse64.v v24, (t0)
+#endif
+
 #ifdef ARCH_RISCV_FPU
+
     addi    sp, sp, -portFloatRegNum * FPREGBYTES
     FPSTORE  f0, 0 * FPREGBYTES(sp)
     FPSTORE  f1, 1 * FPREGBYTES(sp)
@@ -212,6 +267,7 @@ SW_Handler:
     FPSTORE  f31, 31 * FPREGBYTES(sp)
 #endif
 
+
     addi sp, sp, -portCONTEXT_SIZE
     STORE x1,  1  * REGBYTES(sp)    /* RA */
     STORE x5,  2  * REGBYTES(sp)
@@ -245,7 +301,7 @@ SW_Handler:
 #endif
 
     li   t0,    0x20
-	csrs 0x804, t0
+    csrs 0x804, t0
 
     /* Push mstatus to stack */
     csrr t0, CSR_MSTATUS
@@ -267,6 +323,7 @@ SW_Handler:
     la t0, g_losTask
     LOAD t0, 0(t0)
     LOAD sp, 0x0(t0)                /* Read sp from first TCB member */
+
 
     /* Pop PC from stack and set MEPC */
     LOAD t0,  0  * REGBYTES(sp)
@@ -311,6 +368,7 @@ SW_Handler:
     addi sp, sp, portCONTEXT_SIZE
 
 #ifdef ARCH_RISCV_FPU
+
     FPLOAD   f0, 0 * FPREGBYTES(sp)
     FPLOAD   f1, 1 * FPREGBYTES(sp)
     FPLOAD   f2, 2 * FPREGBYTES(sp)
@@ -346,5 +404,24 @@ SW_Handler:
     addi    sp, sp, portFloatRegNum * FPREGBYTES
 #endif
 
-    mret
+#ifdef ARCH_RISCV_RVV
 
+    addi    t0, sp, 0
+    vsetivli zero, 8, e64, m8, ta, ma
+    vle64.v v0, (t0)
+    addi    t0, t0, 64
+    vle64.v v8, (t0)
+    addi    t0, t0, 64
+    vle64.v v16, (t0)
+    addi    t0, t0, 64
+    vle64.v v24, (t0)
+
+    lw      t0, 0(sp)          /* vcsr */
+    csrw    vcsr, t0
+    lw      t0, 4(sp)          /* vtype */
+    lw      t1, 8(sp)          /* vl */
+    vsetvl  zero, t1, t0
+    addi    sp, sp, RVV_CONTEXT_SIZE
+#endif
+
+    mret

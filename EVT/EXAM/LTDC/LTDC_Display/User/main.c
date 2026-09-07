@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/12/01
+* Version            : V1.0.1
+* Date               : 2026/08/25
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -38,8 +38,10 @@ void GPIO_Config(void)
     RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOC, ENABLE);
     RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOD, ENABLE);
     RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOE, ENABLE);
+    GPIO_PinRemapConfig(GPIO_Remap_SWJ_Disable, ENABLE);
 
-    GPIO_PinRemapConfig(GPIO_Remap_SWJ_Disable ,ENABLE);
+    GPIO_PinRemapConfig(GPIO_Remap_USART2, ENABLE);
+    GPIO_PinRemapConfig(GPIO_Remap_USART2, ENABLE);
 
     // LTDC_CLK PE1
     GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_1;
@@ -209,7 +211,6 @@ void GPIO_Config(void)
     GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF_PP;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-    // LTDC_BL
     GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_9;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_High;
     GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;

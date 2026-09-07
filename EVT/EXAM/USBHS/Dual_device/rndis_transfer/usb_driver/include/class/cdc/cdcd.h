@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : cdcd.h
 * Author             : WCH
-* Version            : V1.2
-* Date               : 2026/05/26
+* Version            : V1.3
+* Date               : 2026/08/25
 * Description        : CDC device class define.
 *********************************************************************************
 * Copyright (c) 2026 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -22,6 +22,8 @@ extern "C" {
 
 #include "class/cdc/cdc.h"
 #include "class/cdc/cdc_rndis.h"
+
+#ifdef USB_CDCD_CLASS_CLASS_EN
 
 /* @struct */
 typedef struct
@@ -73,6 +75,8 @@ typedef struct
     rndis_message_stage_e msg_stage;
     uint32_t packet_filter;
 } cdcd_rndis_itf_t;
+
+#endif // USB_CDCD_CLASS_CLASS_EN
 
 #ifdef __cplusplus
 }

@@ -1,5 +1,5 @@
 
-Nanjing Qinheng Microelectronics Co., Ltd. 2026.07
+Nanjing Qinheng Microelectronics Co., Ltd. 2026.08
 
 https://wch-ic.com
 
@@ -37,8 +37,11 @@ Directory
   |      |      |      |-- APPLICATION
   |      |      |      |      |-- SoftUART: I/O port simulation serial port routine
   |      |      |      |      |-- LTDC_LVGL: use LTDC driver to display some animations on the LCD
+  |      |      |      |      |-- RunInPSRAM: Coremark demo run in PSRAM
+  |      |      |      |      |-- AIoCHub: AIoCHub cloud platform application
   |      |      |      |-- ARGB
   |      |      |      |      |-- Gradient: ARGB routine
+  |      |      |      |      |-- PollingFilling: Poll and interrupt mode drive ARGB
   |      |      |      |-- BKP
   |      |      |      |      |-- BKP：BKP routine 
   |      |      |      |-- CAN

@@ -14,6 +14,7 @@
 /* bytes of register width  */
 //#define ARCH_RISCV_FPU
 #define ARCH_RISCV_FPU_S
+// #define ARCH_RISCV_RVV
 
 #ifdef ARCH_CPU_64BIT
 #define STORE                   sd

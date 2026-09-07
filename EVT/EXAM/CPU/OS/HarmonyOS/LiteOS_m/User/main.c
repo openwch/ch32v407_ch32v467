@@ -122,7 +122,7 @@ UINT32 taskSample(VOID)
     UINT32           taskID1, taskID2;
     TSK_INIT_PARAM_S stTask = {0};
     stTask.pfnTaskEntry = (TSK_ENTRY_FUNC)taskSampleEntry1;
-    stTask.uwStackSize = 0X400;
+    stTask.uwStackSize = 0X800;
     stTask.pcName = "taskSampleEntry1";
     stTask.usTaskPrio = 6; /* high priority */
     uwRet = LOS_TaskCreate(&taskID1, &stTask);
@@ -132,7 +132,7 @@ UINT32 taskSample(VOID)
     }
 
     stTask.pfnTaskEntry = (TSK_ENTRY_FUNC)taskSampleEntry2;
-    stTask.uwStackSize = 0X400;
+    stTask.uwStackSize = 0X800;
     stTask.pcName = "taskSampleEntry2";
     stTask.usTaskPrio = 7; /* low priority */
     uwRet = LOS_TaskCreate(&taskID2, &stTask);

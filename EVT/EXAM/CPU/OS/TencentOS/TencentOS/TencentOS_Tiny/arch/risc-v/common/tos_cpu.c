@@ -122,37 +122,61 @@ Inx Offset Register
 */
 
 __KNL__ k_stack_t *cpu_task_stk_init(void *entry,
-                                              void *arg,
-                                              void *exit,
-                                              k_stack_t *stk_base,
-                                              size_t stk_size)
+                                      void *arg,
+                                      void *exit,
+                                      k_stack_t *stk_base,
+                                      size_t stk_size)
 {
-    cpu_data_t *sp      = 0;
+    cpu_data_t *sp = 0;
     cpu_context_t *regs = 0;
 
     sp = (cpu_data_t *)&stk_base[stk_size];
-    sp = (cpu_data_t *)((cpu_addr_t)(sp) & 0xFFFFFFFC);
+    sp = (cpu_data_t *)((cpu_addr_t)(sp) & 0xFFFFFFF8);  
 
-    sp  -= (sizeof(cpu_context_t)/sizeof(cpu_data_t));
 
-    regs = (cpu_context_t*) sp;
+    sp -= (sizeof(cpu_context_t) / sizeof(cpu_data_t));
 
-    for(int i=1; i<(sizeof(cpu_context_t)/sizeof(cpu_data_t)); i++) {
+#if ARCH_RISCV_FPU
+
+    sp -= (128 / sizeof(cpu_data_t));
+#endif
+
+#if ARCH_RISCV_RVV
+
+    sp -= ((12 + 32 * 8) / sizeof(cpu_data_t));
+
+#endif
+
+    regs = (cpu_context_t *)sp;
+
+    for (int i = 1; i < (sizeof(cpu_context_t) / sizeof(cpu_data_t)); i++) {
         *(sp + i) = 0xACEADD00 | ((i / 10) << 4) | (i % 10);
     }
 
     cpu_data_t gp = 0;
-    __ASM__ __VOLATILE__ ("mv %0, gp":"=r"(gp));
+    __ASM__ __VOLATILE__ ("mv %0, gp" : "=r"(gp));
 
-    regs->gp        = (cpu_data_t)gp;           // global pointer
-    regs->a0        = (cpu_data_t)arg;          // argument
-    regs->ra        = (cpu_data_t)exit;         // return address
-    regs->mstatus   = (cpu_data_t)0x00007880;   // return to machine mode and enable interrupt
-    regs->mepc      = (cpu_data_t)entry;        // task entry
+    regs->gp        = (cpu_data_t)gp;
+    regs->a0        = (cpu_data_t)arg;
+    regs->ra        = (cpu_data_t)exit;
+    regs->mstatus   = (cpu_data_t)(0x00007E80 | (3UL << 13));  
+    regs->mepc      = (cpu_data_t)entry;
 
-    return (k_stack_t*)sp;
+    cpu_data_t *rvv_start = (cpu_data_t *)(sp + (sizeof(cpu_context_t) / sizeof(cpu_data_t))
+#if ARCH_RISCV_FPU
+                                         + (128 / sizeof(cpu_data_t))
+#endif
+                                         );
+#if ARCH_RISCV_RVV
+    int rvv_words = (12 + 32 * 8) / sizeof(cpu_data_t);
+    for (int i = 0; i < rvv_words; i++)
+    {
+        rvv_start[i] = 0;
+    }
+#endif
+
+    return (k_stack_t *)sp;
 }
-
 
 __API__ uint32_t tos_cpu_clz(uint32_t val)
 {

@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
 * File Name          : ch32v4x7.h
 * Author             : WCH
-* Version            : V1.0.2
-* Date               : 2026/05/20
+* Version            : V1.0.3
+* Date               : 2026/08/25
 * Description        : CH32V4x7 Device Peripheral Access Layer Header File.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -31,7 +31,7 @@
 
 /* CH32V4x7 Standard Peripheral Library version number */
 #define __CH32V4x7_STDPERIPH_VERSION_MAIN   (0x01) /* [15:8] main version */
-#define __CH32V4x7_STDPERIPH_VERSION_SUB    (0x03) /* [7:0] sub version */
+#define __CH32V4x7_STDPERIPH_VERSION_SUB    (0x04) /* [7:0] sub version */
 #define __CH32V4x7_STDPERIPH_VERSION        ( (__CH32V4x7_STDPERIPH_VERSION_MAIN << 8)\
                                              |(__CH32V4x7_STDPERIPH_VERSION_SUB << 0))
 

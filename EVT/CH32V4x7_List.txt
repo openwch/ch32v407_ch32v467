@@ -1,5 +1,5 @@
 
-南京沁恒微电子股份有限公司 2026.07
+南京沁恒微电子股份有限公司 2026.08
 最新资料请到我们的网站上查询
 https://wch.cn
 
@@ -37,8 +37,11 @@ https://wch.cn
   |      |      |      |-- APPLICATION
   |      |      |      |      |-- SoftUART：I/O口模拟串口例程 
   |      |      |      |      |-- LTDC_LVGL：使用LTDC 在屏幕上显示动画
+  |      |      |      |      |-- RunInPSRAM: 在PSRAM运行Coremark跑分例程
+  |      |      |      |      |-- AIoCHub: AIoCHub 云平台应用
   |      |      |      |-- ARGB
   |      |      |      |      |-- Gradient：ARGB例程
+  |      |      |      |      |-- PollingFilling: 轮询和中断方式驱动ARGB
   |      |      |      |-- BKP
   |      |      |      |      |-- BKP：BKP例程 
   |      |      |      |-- CAN

@@ -42,7 +42,16 @@ extern "C" {
 #endif /* __cplusplus */
 #endif /* __cplusplus */
 
-//#define ARCH_RISCV_FPU
+//#define ARCH_RISCV_FPU       
+//#define ARCH_RISCV_RVV          
+
+#ifdef ARCH_RISCV_RVV
+    #ifndef RVV_VREGS_BYTES
+        #define RVV_VREGS_BYTES 16   
+    #endif
+
+    #define RVV_VREGS_SIZE  (32 * RVV_VREGS_BYTES)
+#endif
 
 /**
  * @ingroup los_hw
@@ -116,6 +125,15 @@ typedef struct {
     STACK_TYPE  f30;
     STACK_TYPE  f31;
 #endif
+
+#ifdef ARCH_RISCV_RVV
+
+    STACK_TYPE vcsr;                
+    STACK_TYPE vtype;                
+    STACK_TYPE vl;                   
+
+    UINT8      vregs[RVV_VREGS_SIZE]; 
+#endif 
 } TaskContext;
 
 extern VOID HalStartToRun(VOID);

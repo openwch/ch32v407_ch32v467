@@ -2,7 +2,7 @@
 * File Name          : main.c
 * Author             : WCH
 * Version            : V1.0.1
-* Date               : 2026/06/30
+* Date               : 2026/08/10
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -42,7 +42,7 @@ void PSRAM_INIT(void)
     PSRAMInitStruct.PSRAM_cfifo=PSRAM_CFIFO_BTWWRRD;
     #if(PSRAM_Memory==Memory32Mb)
     PSRAMInitStruct.PSRAM_cap_cfg=PSRAM_CAPCFG_32M;
-    #elif (PSRAM_Memory==Memory32Mb) 
+    #elif (PSRAM_Memory==Memory64Mb) 
      PSRAMInitStruct.PSRAM_cap_cfg=PSRAM_CAPCFG_64M;
     #endif
     PSRAMInitStruct.PSRAM_exti_lpmd=PSRAM_EXIT_LPMD;
@@ -100,7 +100,7 @@ static void PSRAM_300MHz_HSE(void)
 
     if (HSEStatus == (uint32_t)0x01)
     {
-      /* HCLK = SYSCLK  */
+      /* HCLK = SYSCLK/2 */
       RCC->CFGR0 |= (uint32_t)RCC_HPRE_DIV2;
       /* PCLK2 = HCLK */
       RCC->CFGR0 |= (uint32_t)RCC_PPRE2_DIV1;
@@ -170,6 +170,7 @@ int main(void)
     printf("SystemClk:%d\r\n", SystemClock);
     printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
     printf("PSRAM TEST\r\n");
+	PWR_VDD18LevelConfig(PWR_VDD18_Level1);
     PSRAM_INIT();
     while(1){
     for(int j=0; j<BUFFER_SIZE; j++)

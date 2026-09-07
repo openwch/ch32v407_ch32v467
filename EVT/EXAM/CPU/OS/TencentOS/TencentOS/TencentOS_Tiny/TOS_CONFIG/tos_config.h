@@ -33,7 +33,7 @@
 
 #define TOS_CFG_SEM_EN                  1u
 
-#define TOS_CFG_CPU_SYSTICK_PRIO       0xF0     //V307优先级高四位有效
+#define TOS_CFG_CPU_SYSTICK_PRIO       0xF0     //V307
 
 #if (TOS_CFG_QUEUE_EN > 0u)
 #define TOS_CFG_MSG_EN 1u
@@ -48,7 +48,7 @@
 #define TOS_CFG_IDLE_TASK_STK_SIZE 512u
 
 
-#define TOS_CFG_IRQ_STK_SIZE    512u
+#define TOS_CFG_IRQ_STK_SIZE    1024u
 
 
 #define TOS_CFG_CPU_TICK_PER_SECOND 1000u

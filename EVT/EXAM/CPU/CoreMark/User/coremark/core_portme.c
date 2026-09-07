@@ -24,7 +24,7 @@ Original Author: Shay Gal-on
 
 volatile CORETIMETYPE g_msticks=0;
 void systick_init(void);
-#define ITERATIONS (6000)
+#define ITERATIONS (8000)
 
 
 #if VALIDATION_RUN

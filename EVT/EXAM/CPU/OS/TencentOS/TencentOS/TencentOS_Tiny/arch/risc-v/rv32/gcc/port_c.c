@@ -22,18 +22,18 @@
 
 __PORT__ void port_int_disable(void)
 {
-    asm("csrw mstatus, %0" : :"r"(0x7800));
+    asm("csrw mstatus, %0" : :"r"(0x7E00));
 }
 
 __PORT__ void port_int_enable(void)
 {
-    asm("csrw mstatus, %0" : :"r"(0x7888));
+    asm("csrw mstatus, %0" : :"r"(0x7E88));
 }
 
 __PORT__ cpu_cpsr_t port_cpsr_save(void)
 {
     cpu_cpsr_t value=0;
-    asm("csrrw %0, mstatus, %1":"=r"(value):"r"(0x7800));
+    asm("csrrw %0, mstatus, %1":"=r"(value):"r"(0x7E00));
     return value;
 }
 __PORT__ void port_cpsr_restore(cpu_cpsr_t cpsr)

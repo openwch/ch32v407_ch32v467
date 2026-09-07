@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : usb_define.h
 * Author             : WCH
-* Version            : V1.2
-* Date               : 2026/05/26
+* Version            : V1.3
+* Date               : 2026/08/25
 * Description        : Usb driver define.
 *********************************************************************************
 * Copyright (c) 2026 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -21,16 +21,23 @@ extern "C" {
 #include <stdint.h>
 
 /* @define */
-#define USB_DRIVER_VERSION_STRING       "v1.2"
-#define USB_DRIVER_VERSION_NUMBER       (0x0120)
+#define USB_DRIVER_VERSION_STRING       "v1.3"
+#define USB_DRIVER_VERSION_NUMBER       (0x0130)
 
 #define USB_MAX_EP_NUM                  (16)
 
 #define ENDP_DIR(endp)                  ((endp) & 0x80)
 #define ENDP_NUM(endp)                  ((endp) & 0x7F)
+#define ENDP_TYPE(endp)                 ((endp) & 0x03)
+#define ENDP_MAX_SIZE(size)             ((size) & 0x07FF)
+#define ENDP_ADDITIONAL(size)           (((size) >> 11) & 0x03)
 
 #define USB_MIN(a, b)                   ((a) < (b) ? (a) : (b))
 #define USB_MAX(a, b)                   ((a) > (b) ? (a) : (b))
+#define USB_RANGE(a, min, max)          (USB_MAX((min), USB_MIN((a), (max))))
+
+#define USB_REQ_BM(dir, type, rcpt)     (((dir) << 7) | ((type) << 5) | (rcpt))
+#define USB_ARRAY_SIZE(a)               (sizeof(a) / sizeof((a)[0]))
 
 #define U16_HIGH(_u16)                  ((uint8_t)(((_u16) >> 8) & 0x00FF))
 #define U16_LOW(_u16)                   ((uint8_t)(((_u16) >> 0) & 0x00FF))
@@ -55,14 +62,11 @@ typedef enum
     USB_RST_OK,
     USB_RST_FAILED,
     USB_RST_NULL_PTR,
-    USB_RST_NOT_ENABLE,
-    USB_RST_NOT_OPEN,
     USB_RST_OVERFLOW,
     USB_RST_EXISTS,
     USB_RST_ERROR_PARAMETER,
     USB_RST_ENDP_BUSY,
     USB_RST_ENDP_STALL,
-    USB_RST_UNKNOW_EVENT,
     USB_RST_UNSUPPORTED_ENDP,
     USB_RST_UNSUPPORTED_EVENT,
     USB_RST_UNSUPPORTED_SOF,
@@ -88,29 +92,6 @@ typedef enum
     USB_DIR_OUT,
     USB_DIR_IN,
 } usb_dir_e;
-
-// typedef enum
-// {
-//     USB_PID_OUT      = 0x01,
-//     USB_PID_IN       = 0x09,
-//     USB_PID_SOF      = 0x05,
-//     USB_PID_SETUP    = 0x0D,
-
-//     USB_PID_DATA0    = 0x03,
-//     USB_PID_DATA1    = 0x0B,
-//     USB_PID_DATA2    = 0x07,
-//     USB_PID_MDATA    = 0x0F,
-
-//     USB_PID_ACK      = 0x02,
-//     USB_PID_NAK      = 0x0A,
-//     USB_PID_STALL    = 0x0E,
-//     USB_PID_NYET     = 0x06,
-
-//     USB_PID_PRE_ERR  = 0x0C,
-//     USB_PID_SPLIT    = 0x08,
-//     USB_PID_PING     = 0x04,
-//     USB_PID_RESERVED = 0x00,
-// } usb_pid_e;
 
 typedef enum
 {
@@ -253,15 +234,30 @@ typedef enum
     USB_DESC_CS_STRING              = 0x23,
     USB_DESC_CS_INTERFACE           = 0x24,
     USB_DESC_CS_ENDPOINT            = 0x25,
-
-    USB_DESC_HUB                    = 0x29,
 } usb_desc_type_e;
 
+typedef enum
+{
+    HUB_FEATURE_C_HUB_LOCAL_POWER   = 0x00,
+    HUB_FEATURE_C_HUB_OVER_CURRENT  = 0x01,
+
+    HUB_FEATURE_PORT_CONNECTION     = 0x00,
+    HUB_FEATURE_PORT_ENABLE         = 0x01,
+    HUB_FEATURE_PORT_SUSPEND        = 0x02,
+    HUB_FEATURE_PORT_OVER_CURRENT   = 0x03,
+    HUB_FEATURE_PORT_RESET          = 0x04,
+    HUB_FEATURE_PORT_POWER          = 0x08,
+    HUB_FEATURE_PORT_LOW_SPEED      = 0x09,
+    HUB_FEATURE_C_PORT_CONNECTION   = 0x10,
+    HUB_FEATURE_C_PORT_ENABLE       = 0x11,
+    HUB_FEATURE_C_PORT_SUSPEND      = 0x12,
+    HUB_FEATURE_C_PORT_OVER_CURRENT = 0x13,
+    HUB_FEATURE_C_PORT_RESET        = 0x14,
+    HUB_FEATURE_PORT_TEST           = 0x15,
+    HUB_FEATURE_PORT_INDICATOR      = 0x16,
+} hub_feature_e;
+
 /* @struct */
-
-/* Start single-byte alignment */
-#pragma pack(1)
-
 typedef struct
 {
     union
@@ -313,6 +309,9 @@ typedef struct
     uint8_t bReserved;
 } desc_qua_t;
 
+/* Start single-byte alignment */
+#pragma pack(1)
+
 typedef struct
 {
     uint8_t bLength;
@@ -348,6 +347,30 @@ typedef struct
     uint8_t bInterval;
 } desc_endpoint_t;
 
+typedef struct
+{
+    uint8_t bLength;
+    uint8_t bDescriptorType;
+    uint8_t bEndpointAddress;
+    uint8_t bmAttributes;
+    uint16_t wMaxPacketSize;
+    uint8_t bInterval;
+    uint8_t bRefresh;
+    uint8_t bSynchAddress;
+} desc_endp_iso_t;
+
+typedef struct
+{
+    uint8_t bLength;
+    uint8_t bDescriptorType;
+    uint8_t bFirstInterface;
+    uint8_t bInterfaceCount;
+    uint8_t bFunctionClass;
+    uint8_t bFunctionSubClass;
+    uint8_t bFunctionProtocol;
+    uint8_t iFunction;
+} desc_iad_t;
+
 /* End single-byte alignment */
 #pragma pack()
 
@@ -368,7 +391,48 @@ typedef struct
             uint32_t reserved : 13;
         };
     };
+
+    uint16_t iso_out_length;
+    uint16_t iso_out_offset;
 } split_data_t;
+
+typedef struct
+{
+    union
+    {
+        uint16_t port_status;
+
+        struct
+        {
+            uint16_t connect : 1;
+            uint16_t enable : 1;
+            uint16_t suspend : 1;
+            uint16_t over_current : 1;
+            uint16_t reset : 1;
+            uint16_t reserved1 : 3;
+            uint16_t power : 1;
+            uint16_t low_speed : 1;
+            uint16_t high_speed : 1;
+            uint16_t test_mode : 1;
+            uint16_t port_indicator : 1;
+            uint16_t reserved2 : 3;
+        } port_status_bits;
+    };
+
+    union
+    {
+        uint16_t port_change;
+
+        struct
+        {
+            uint16_t connect : 1;
+            uint16_t enable : 1;
+            uint16_t suspend : 1;
+            uint16_t over_current : 1;
+            uint16_t reset : 1;
+        } port_change_bits;
+    };
+} hub_port_status_t;
 
 #ifdef __cplusplus
 }

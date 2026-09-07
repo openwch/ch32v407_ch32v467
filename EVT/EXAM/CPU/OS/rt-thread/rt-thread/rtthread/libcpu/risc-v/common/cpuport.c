@@ -112,6 +112,15 @@ rt_uint8_t *rt_hw_stack_init(void       *tentry,
 
     stk  = stack_addr + sizeof(rt_ubase_t);
     stk  = (rt_uint8_t *)RT_ALIGN_DOWN((rt_ubase_t)stk, REGBYTES);
+
+#ifdef ARCH_RISCV_RVV    
+    /* V extension context (vcsr/vtype/vl + v0-v31, 12+256 bytes) sits above
+     * the base frame; reserve it so the first context switch restores a
+     * consistent SP instead of running past the stack top into the
+     * thread control block. */
+    stk -= (12 + 32 * 8); 
+#endif
+
     stk -= sizeof(struct rt_hw_stack_frame);
 
     frame = (struct rt_hw_stack_frame *)stk;
@@ -126,7 +135,14 @@ rt_uint8_t *rt_hw_stack_init(void       *tentry,
     frame->epc     = (rt_ubase_t)tentry;
 
     /* force to machine mode(MPP=11) and set MPIE to 1 */
-    frame->mstatus = 0x00001880;
+    frame->mstatus = 0x00001E80;
+#ifdef ARCH_RISCV_RVV     
+    /* zero the V extension region (above the base frame) */
+    for (i = 0; i < (12 + 32 * 8) / sizeof(rt_ubase_t); i++)
+    {
+        ((rt_ubase_t *)frame)[sizeof(struct rt_hw_stack_frame) / sizeof(rt_ubase_t) + i] = 0;
+    } 
+#endif       
     return stk;
 }
 
@@ -152,7 +168,7 @@ void sw_clearpend(void)
 rt_base_t rt_hw_interrupt_disable(void)
 {
     rt_base_t value=0;
-    asm("csrrw %0, mstatus, %1":"=r"(value):"r"(0x1800));
+    asm("csrrw %0, mstatus, %1":"=r"(value):"r"(0x1E00));
     return value;
 }
 

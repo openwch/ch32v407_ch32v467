@@ -363,7 +363,7 @@ handle_reset:
     li t0, 0x1f
     csrw 0x804, t0
 /* Enable Vector operation and global interrupt, configure privileged mode */
-   	li t0, 0x7800           
+   	li t0, 0x1E00           
    	csrw mstatus, t0
 /* Configure the interrupt vector table recognition mode and entry address mode */
  	la t0, _start

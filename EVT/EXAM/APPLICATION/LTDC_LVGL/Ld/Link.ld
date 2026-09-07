@@ -13,8 +13,9 @@ MEMORY
 	FLASH-576K + RAM-136K
 	FLASH-512K + RAM-200K
 	*/
-	FLASH (rx) : ORIGIN = 0x00000000, LENGTH = 512K
-	RAM (xrw) : ORIGIN = 0x20000000+1024, LENGTH = 200K-1K
+	FLASH (rx) : ORIGIN = 0x00000000, LENGTH = 576K
+	RAM (xrw) : ORIGIN = 0x20000000+1024, LENGTH = 136K-1K
+	PSRAM (xrw) : ORIGIN = 0x80000000, LENGTH = 8M
 }
 
 
@@ -29,6 +30,16 @@ SECTIONS
 		. = ALIGN(4);
 		_einit = .;
 	} >FLASH AT>FLASH
+
+
+
+	.psram (NOLOAD):
+	{
+		. = ALIGN(4);
+ 		*(.psram.*)
+		*(.psram*)
+ 
+	} >PSRAM
 
 
 	.text :

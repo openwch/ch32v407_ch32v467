@@ -33,6 +33,18 @@
 
 #include "riscv_encoding.h"
 
+#ifdef ARCH_RISCV_RVV
+
+    #ifndef VREG_BYTES
+        #define VREG_BYTES  16
+    #endif
+    #define VREG_SIZE   (32 * VREG_BYTES)
+    #define VCSR_SIZE   (3 * 4)
+    #define RVV_CONTEXT_SIZE   (VCSR_SIZE + VREG_SIZE)
+#else
+    #define RVV_CONTEXT_SIZE   0
+#endif
+
 .section  .text
 .align 8
 /**
@@ -56,13 +68,18 @@
 */
 /* Save caller registers */
 .macro SAVE_CONTEXT
-    csrrw sp, CSR_MSCRATCH, sp     /* 把中断栈给sp,并把线程栈存到mscratch */
-    /* Allocate stack space for context saving */
+    csrrw sp, CSR_MSCRATCH, sp
+
 #ifndef __riscv_32e
-    addi sp, sp, -20*REGBYTES
+    .set GEN_CONTEXT_SIZE, (20 * REGBYTES)
 #else
-    addi sp, sp, -14*REGBYTES
-#endif /* __riscv_32e */
+    .set GEN_CONTEXT_SIZE, (14 * REGBYTES)
+#endif
+    .set TOTAL_SIZE, (GEN_CONTEXT_SIZE + RVV_CONTEXT_SIZE)
+    .set VCSR_OFFSET, GEN_CONTEXT_SIZE
+    .set VREG_OFFSET, (GEN_CONTEXT_SIZE + VCSR_SIZE)
+
+    addi sp, sp, -TOTAL_SIZE  
 
     STORE x1, 0*REGBYTES(sp)
     STORE x4, 1*REGBYTES(sp)
@@ -83,6 +100,28 @@
     STORE x30, 18*REGBYTES(sp)
     STORE x31, 19*REGBYTES(sp)
 #endif /* __riscv_32e */
+
+#ifdef ARCH_RISCV_RVV
+
+    csrr    t0, vcsr
+    sw      t0, VCSR_OFFSET(sp)
+    csrr    t0, vtype
+    sw      t0, VCSR_OFFSET + 4(sp)
+    csrr    t0, vl
+    sw      t0, VCSR_OFFSET + 8(sp)
+
+
+    addi    t0, sp, VREG_OFFSET
+    vsetivli zero, 8, e64, m8, ta, ma
+    vse64.v v0, (t0)
+    addi    t0, t0, 64
+    vse64.v v8, (t0)
+    addi    t0, t0, 64
+    vse64.v v16, (t0)
+    addi    t0, t0, 64
+    vse64.v v24, (t0)
+#endif /* ARCH_RISCV_RVV */
+
 .endm
 
 /**
@@ -95,6 +134,37 @@
  */
 /* Restore caller registers */
 .macro RESTORE_CONTEXT
+
+#ifndef __riscv_32e
+    .set GEN_CONTEXT_SIZE, (20 * REGBYTES)
+#else
+    .set GEN_CONTEXT_SIZE, (14 * REGBYTES)
+#endif
+    .set TOTAL_SIZE,  (GEN_CONTEXT_SIZE + RVV_CONTEXT_SIZE)
+    .set VCSR_OFFSET, GEN_CONTEXT_SIZE
+    .set VREG_OFFSET, (GEN_CONTEXT_SIZE + VCSR_SIZE)
+
+#ifdef ARCH_RISCV_RVV
+
+    addi    t0, sp, VREG_OFFSET
+    vsetivli zero, 8, e64, m8, ta, ma
+    vle64.v v0, (t0)
+    addi    t0, t0, 64
+    vle64.v v8, (t0)
+    addi    t0, t0, 64
+    vle64.v v16, (t0)
+    addi    t0, t0, 64
+    vle64.v v24, (t0)
+
+
+    lw      t0, VCSR_OFFSET(sp)
+    csrw    vcsr, t0
+    lw      t0, VCSR_OFFSET + 4(sp)  
+    lw      t1, VCSR_OFFSET + 8(sp)  
+    vsetvl  zero, t1, t0            
+#endif /* ARCH_RISCV_RVV */
+
+
     LOAD x1, 0*REGBYTES(sp)
     LOAD x4, 1*REGBYTES(sp)
     LOAD x5, 2*REGBYTES(sp)
@@ -113,14 +183,12 @@
     LOAD x29, 17*REGBYTES(sp)
     LOAD x30, 18*REGBYTES(sp)
     LOAD x31, 19*REGBYTES(sp)
-
-    /* De-allocate the stack space */
-    addi sp, sp, 20*REGBYTES
-#else
-    /* De-allocate the stack space */
-    addi sp, sp, 14*REGBYTES
 #endif /* __riscv_32e */
-    csrrw sp, CSR_MSCRATCH, sp         /* 退出后把线程栈给sp,把中断栈存入mscratch */
+
+    addi sp, sp, TOTAL_SIZE
+
+
+    csrrw sp, CSR_MSCRATCH, sp
 .endm
 
 
@@ -155,7 +223,7 @@ irq_entry:
     /* Critical section with interrupts disabled */
     DISABLE_MIE
 /*************************/
-    /* jal  irq_handler */   /* 跳转到中断处理函数  */
+    /* jal  irq_handler */   
 /*************************/
     la t0, g_intCount
     lw t1, 0(t0)

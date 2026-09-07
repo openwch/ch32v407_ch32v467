@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : uvcd.h
 * Author             : WCH
-* Version            : V1.2
-* Date               : 2026/05/26
+* Version            : V1.3
+* Date               : 2026/08/25
 * Description        : Uvc device class define.
 *********************************************************************************
 * Copyright (c) 2026 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -23,6 +23,8 @@ extern "C" {
 #include "usb_define.h"
 #include "class/uvc/uvc.h"
 
+#ifdef USB_UVCD_CLASS_CLASS_EN
+
 /* @struct */
 typedef struct
 {
@@ -37,6 +39,8 @@ typedef struct
 
     uvc_info_t info;
 } uvcd_interface_t;
+
+#endif // USB_UVCD_CLASS_CLASS_EN
 
 #ifdef __cplusplus
 }

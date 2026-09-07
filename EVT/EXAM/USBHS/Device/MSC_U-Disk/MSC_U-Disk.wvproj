@@ -5,10 +5,10 @@
 		"chipInfo": {
 			"vendor": "WCH",
 			"toolchain": "RISC-V",
-			"series": "CH32V205",
+			"series": "CH32V4X7",
 			"rtos": "NoneOS",
-			"mcu": "CH32V205RCT",
-			"description": "===ROM(byte): 64K, SRAM(byte): 12K, CHIP PINS: 48, GPIO PORTS: 37.\\nWCH CH32V205 series of mainstream MCUs covers the needs of a large variety of applications in the industrial,medical and consumer markets. High performance with first-class peripherals and low-power,low-voltage operation is paired with a high level of integration at accessible prices with a simple architecture and easy-to-use tools.",
+			"mcu": "CH32V407RET",
+			"description": "ROM(byte): 256K, SRAM(byte):",
 			"link": "WCH-Link",
 			"peripheral_version": "===1.0",
 			"calibrateSupport": false,
@@ -63,7 +63,7 @@
 				"post_script": "",
 				"post_script_description": "",
 				"excludeResources": [
-					"${project}/Startup/startup_ch32v205_5v.S"
+					""
 				],
 				"optimization": {
 					"level": "size",
@@ -345,7 +345,7 @@
 				"post_script": "",
 				"post_script_description": "",
 				"excludeResources": [
-					"${project}/Startup/startup_ch32v205_5v.S"
+					""
 				],
 				"optimization": {
 					"level": "size",
@@ -616,7 +616,7 @@
 		]
 	},
 	"flashConfig": {
-		"mcutype": "CH32V205",
+		"mcutype": "CH32V4X7",
 		"address": "0x08000000",
 		"target_path": "obj\\CH372Device.hex",
 		"clkSpeed": "High",

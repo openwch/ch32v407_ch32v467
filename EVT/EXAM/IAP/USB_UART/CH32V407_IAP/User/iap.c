@@ -47,7 +47,6 @@ u8 RecData_Deal(void)
 
      switch ( isp_cmd_t->other.buf[0]) {
      case CMD_IAP_ERASE:
-         FLASH_Unlock_Fast();
          s = ERR_SUCCESS;
          break;
 
@@ -57,9 +56,7 @@ u8 RecData_Deal(void)
          }
          CodeLen += Lenth;
          if (CodeLen >= Size_4KB) {
-             FLASH_Unlock_Fast();
-            //  FLASH_ErasePage_Fast(Program_addr);
-            FLASH_ErasePage(Program_addr);
+            FLASH_ROM_ERASE(Program_addr,Size_4KB);
             PBuf = Fast_Program_Buf;
             for (uint32_t j = 0; j < (Size_4KB/Size_256B);j++)
             {
@@ -90,7 +87,7 @@ u8 RecData_Deal(void)
             }
             temp = CodeLen;
             PBuf = Fast_Program_Buf;
-            FLASH_ErasePage(Program_addr& (~(Size_4KB-1)));
+            FLASH_ROM_ERASE(Program_addr& (~(Size_4KB-1)),Size_4KB);
 
             for(i = 0;i < ((temp+Size_256B-1)/Size_256B);i++)
             {
@@ -119,9 +116,7 @@ u8 RecData_Deal(void)
          End_Flag = 1;
          Program_addr = FLASH_Base;
          Verify_addr = FLASH_Base;
-        FLASH_ErasePage(CalAddr & (~(Size_4KB-1)));
-         FLASH->CTLR |= ((uint32_t)0x00008000);  //FLASH_Lock_Fast
-         FLASH->CTLR |= ((uint32_t)0x00000080);  //FLASH_Lock
+         FLASH_ROM_ERASE(CalAddr & (~(Size_4KB-1)),Size_4KB);
          s = ERR_End;
          break;
 
@@ -154,8 +149,6 @@ u8 UART_RecData_Deal(void)
     Lenth = isp_cmd_t->UART.Len;
     switch ( isp_cmd_t->UART.Cmd) {
     case CMD_IAP_ERASE:
-
-        FLASH_Unlock_Fast();
         s = ERR_SUCCESS;
         break;
 
@@ -165,8 +158,7 @@ u8 UART_RecData_Deal(void)
         }
         CodeLen += Lenth;
         if (CodeLen >= Size_4KB) {
-            FLASH_Unlock_Fast();
-            FLASH_ErasePage(Program_addr);
+            FLASH_ROM_ERASE(Program_addr,Size_4KB);
             PBuf = Fast_Program_Buf;
             for (uint32_t j = 0; j < (Size_4KB/Size_256B);j++)
             {
@@ -199,7 +191,7 @@ u8 UART_RecData_Deal(void)
                 }
                 temp = CodeLen;
                 PBuf = Fast_Program_Buf;
-                FLASH_ErasePage(Program_addr& (~(Size_4KB-1)));
+                FLASH_ROM_ERASE(Program_addr& (~(Size_4KB-1)),Size_4KB);
 
                 for(i = 0;i < ((temp+Size_256B-1)/Size_256B);i++)
                 {
@@ -227,9 +219,7 @@ u8 UART_RecData_Deal(void)
         Program_addr = FLASH_Base;
         Verify_addr = FLASH_Base;
         s = ERR_End;
-        FLASH_ErasePage(CalAddr & (~(Size_4KB-1)));
-        FLASH->CTLR |= ((uint32_t)0x00008000);
-        FLASH->CTLR |= ((uint32_t)0x00000080);
+        FLASH_ROM_ERASE(CalAddr & (~(Size_4KB-1)),Size_4KB);
 
         break;
 

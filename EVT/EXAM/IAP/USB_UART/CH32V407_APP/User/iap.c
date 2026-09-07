@@ -22,6 +22,7 @@ vu32 Verify_addr = FLASH_Base;
 vu32 User_APP_Addr_offset = 0x5000;
 vu8 Verify_Star_flag = 0;
 vu8 Fast_Program_Buf[1024*10];
+u32 Program_Buf[64];
 vu32 CodeLen = 0;
 vu8 End_Flag = 0;
 u8 IAP_Deal_Buf[USBD_DATA_SIZE+4];
@@ -30,6 +31,29 @@ u8 IAP_Deal_Buf[USBD_DATA_SIZE+4];
 
 #define  Size_256B         0x100
 #define  Size_4KB          0x1000
+
+/*********************************************************************
+ * @fn      Program_Buf_Modify
+ *
+ * @brief   Program_Buf Modify
+ *
+ * @return  none
+ */
+void Program_Buf_Modify(void)
+{
+    for(int i = 0; i < 64; i++)
+    {
+        if(((CalAddr & 0xFFFFFF00)+4*i)!=CalAddr)
+        {
+            Program_Buf[i] = *(uint32_t*)((CalAddr & 0xFFFFFF00)+4*i);
+        }
+        else
+        {
+            Program_Buf[i] = (uint32_t)CheckNum;
+        }
+    }
+}
+
 /*********************************************************************
  * @fn      RecData_Deal
  *
@@ -44,11 +68,10 @@ u8 RecData_Deal(void)
     uint8_t  s;
      switch ( isp_cmd_t->other.buf[0]) {
      case CMD_JUMP_IAP:
-        FLASH_Unlock_Fast();
-        FLASH_ErasePage(CalAddr & (~(Size_4KB-1)));
-        FLASH_ProgramWord(CalAddr, 0x5aa55aa5);
-        FLASH->CTLR |= ((uint32_t)0x00008000);
-        FLASH->CTLR |= ((uint32_t)0x00000080);
+        Program_Buf_Modify();
+        FLASH_ROM_ERASE(CalAddr & (~(Size_4KB-1)),Size_4KB);
+        CH32_IAP_Program(CalAddr & 0xFFFFFF00,(u32*)Program_Buf);
+
          s = ERR_SUCCESS;
          break;
      default:
@@ -73,11 +96,10 @@ u8 UART_RecData_Deal(void)
     uint8_t  s;
     switch ( isp_cmd_t->UART.Cmd) {
     case CMD_JUMP_IAP:
-        FLASH_Unlock_Fast();
-        FLASH_ErasePage(CalAddr & (~(Size_4KB-1)));
-        FLASH_ProgramWord(CalAddr, 0x5aa55aa5);
-        FLASH->CTLR |= ((uint32_t)0x00008000);
-        FLASH->CTLR |= ((uint32_t)0x00000080);
+        Program_Buf_Modify();
+        FLASH_ROM_ERASE(CalAddr & (~(Size_4KB-1)),Size_4KB);
+        CH32_IAP_Program(CalAddr & 0xFFFFFF00,(u32*)Program_Buf);
+
         s = ERR_SUCCESS;
         break;
     default:

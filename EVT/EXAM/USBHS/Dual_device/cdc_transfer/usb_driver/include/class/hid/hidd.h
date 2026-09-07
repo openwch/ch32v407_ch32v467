@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : hidd.h
 * Author             : WCH
-* Version            : V1.2
-* Date               : 2026/05/26
+* Version            : V1.3
+* Date               : 2026/08/25
 * Description        : Hid device class define.
 *********************************************************************************
 * Copyright (c) 2026 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -23,6 +23,8 @@ extern "C" {
 #include "usb_define.h"
 #include "class/hid/hid.h"
 
+#ifdef USB_HIDD_CLASS_CLASS_EN
+
 /* @struct */
 typedef struct
 {
@@ -35,6 +37,8 @@ typedef struct
     uint8_t protocol_mode;
     uint8_t idle_rate;
 } hidd_interface_t;
+
+#endif // USB_HIDD_CLASS_CLASS_EN
 
 #ifdef __cplusplus
 }

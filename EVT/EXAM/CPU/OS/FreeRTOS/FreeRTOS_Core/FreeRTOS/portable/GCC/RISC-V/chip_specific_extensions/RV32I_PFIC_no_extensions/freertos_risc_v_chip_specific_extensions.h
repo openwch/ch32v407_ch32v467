@@ -56,14 +56,53 @@
 
 #define portasmHAS_SIFIVE_CLINT 0
 #define portasmHAS_MTIME 0
-/* if you want to use FPU, please define ARCH_FPU and enable float point and ABI of gcc */
-#define ARCH_FPU 0
 
+/* Check if Vector extension is enabled by the compiler */
+#ifndef ARCH_FPU
+#if defined(__riscv_f)
+    #define ARCH_FPU 1
+#else
+    #define ARCH_FPU 0
+#endif
+#endif
+
+/* Check if Vector extension is enabled by the compiler */
+#ifndef ARCH_VECTOR
+#if defined(__riscv_vector)
+    #define ARCH_VECTOR 1
+#else
+    #define ARCH_VECTOR 0
+#endif
+#endif
+
+/* 
+ * Context sizes are in bytes (used by SAVE/RESTORE macros for stack space allocation)
+ * These are the actual stack frame sizes needed
+ */
+#define portFPU_CONTEXT_SIZE 128       /* 32 f-registers × 4 bytes */
+#define portVECTOR_CONTEXT_SIZE 268    /* 32 v-registers × 8 bytes + 3 CSRs × 4 bytes */
+
+/* 
+ * Additional context register count (used by pxPortInitialiseStack for loop iteration)
+ * This is the number of registers to initialize, each taking portWORD_SIZE bytes
+ * For RV32: portWORD_SIZE = 4, so: 128/4 = 32, 268/4 = 67
+ */
+#define portFPU_REG_COUNT 32           /* Number of FPU registers */
+#define portVECTOR_REG_COUNT 67        /* Vector context in register units (268/4) */
+
+#if ARCH_FPU && ARCH_VECTOR
+    #define portasmADDITIONAL_CONTEXT_SIZE portVECTOR_REG_COUNT + portFPU_REG_COUNT /* 67 + 32 = 99 */
+#elif ARCH_FPU
+    #define portasmADDITIONAL_CONTEXT_SIZE portFPU_REG_COUNT
+#elif ARCH_VECTOR
+    #define portasmADDITIONAL_CONTEXT_SIZE portVECTOR_REG_COUNT
+#else
+    #define portasmADDITIONAL_CONTEXT_SIZE 0
+#endif
 
 #if ARCH_FPU
-#define portasmADDITIONAL_CONTEXT_SIZE 32 /* Must be even number on 32-bit cores. */
-.macro portasmSAVE_ADDITIONAL_REGISTERS
-    addi sp, sp, -(portasmADDITIONAL_CONTEXT_SIZE* portWORD_SIZE)
+.macro SAVE_FPU_REGISTERS
+    addi sp, sp, -portFPU_CONTEXT_SIZE
     fsw f0, 1*portWORD_SIZE(sp)
     fsw f1, 2*portWORD_SIZE(sp)
     fsw f2, 3*portWORD_SIZE(sp)
@@ -96,9 +135,9 @@
     fsw f29, 30*portWORD_SIZE(sp)
     fsw f30, 31*portWORD_SIZE(sp)
     fsw f31, 32*portWORD_SIZE(sp)
-	.endm
+    .endm
 
-.macro portasmRESTORE_ADDITIONAL_REGISTERS
+.macro RESTORE_FPU_REGISTERS
     flw f0, 1*portWORD_SIZE(sp)
     flw f1, 2*portWORD_SIZE(sp)
     flw f2, 3*portWORD_SIZE(sp)
@@ -131,20 +170,94 @@
     flw f29, 30*portWORD_SIZE(sp)
     flw f30, 31*portWORD_SIZE(sp)
     flw f31, 32*portWORD_SIZE(sp)
-    addi sp, sp, (portasmADDITIONAL_CONTEXT_SIZE* portWORD_SIZE)
-	.endm
+    addi sp, sp, portFPU_CONTEXT_SIZE
+    .endm
 #else
-#define portasmADDITIONAL_CONTEXT_SIZE 0 /* Must be even number on 32-bit cores. */
+.macro SAVE_FPU_REGISTERS
+    .endm
+.macro RESTORE_FPU_REGISTERS
+    .endm
+#endif
 
+#if ARCH_VECTOR
+/* Vector register save/restore for RV32 + V extension (Zve64x) */
+/* 32 vector registers × 8 bytes = 256 bytes */
 
+.macro SAVE_VECTOR_REGISTERS
+    vsetivli zero, 8, e64, m8
+    /* Save v0-v7 (64 bytes) */
+    addi sp, sp, -64
+    vse64.v v0, (sp)
+    /* Save v8-v15 (64 bytes) */
+    addi sp, sp, -64
+    vse64.v v8, (sp)
+    /* Save v16-v23 (64 bytes) */
+    addi sp, sp, -64
+    vse64.v v16, (sp)
+    /* Save v24-v31 (64 bytes) */
+    addi sp, sp, -64
+    vse64.v v24, (sp)
+    .endm
+
+.macro SAVE_VECTOR_CSRS
+    /* Save CSRs: vcsr (writable), vtype, vl */
+    /* Total: 12 bytes */
+    addi sp, sp, -12
+    csrr t0, vcsr
+    sw t0, 0(sp)
+    csrr t0, vtype
+    sw t0, 4(sp)
+    csrr t0, vl
+    sw t0, 8(sp)
+    .endm
+
+.macro RESTORE_VECTOR_REGISTERS
+    vsetivli zero, 8, e64, m8 
+    /* Restore v24-v31 */
+    vle64.v v24, (sp)
+    addi sp, sp, 64
+    /* Restore v16-v23 */
+    vle64.v v16, (sp)
+    addi sp, sp, 64
+    /* Restore v8-v15 */
+    vle64.v v8, (sp)
+    addi sp, sp, 64
+    /* Restore v0-v7 */
+    vle64.v v0, (sp)
+    addi sp, sp, 64
+    .endm
+
+.macro RESTORE_VECTOR_CSRS
+    /* Restore CSRs: vtype and vl via vsetvl, vcsr via csrw */
+    lw t0, 4(sp)           /* load saved vtype */
+    lw t1, 8(sp)           /* load saved vl */
+    lw t2, 0(sp)           /* load saved vcsr */
+    csrw vcsr, t2
+    vsetvl zero, t1, t0    /* set vl and vtype together (vl=rd, vtype=rs1) */
+    addi sp, sp, 12
+    .endm
+#else
+.macro SAVE_VECTOR_REGISTERS
+    .endm
+.macro SAVE_VECTOR_CSRS
+    .endm
+.macro RESTORE_VECTOR_REGISTERS
+    .endm
+.macro RESTORE_VECTOR_CSRS
+    .endm
+#endif
+
+/* Main save/restore macros that combine all extensions */
 .macro portasmSAVE_ADDITIONAL_REGISTERS
-    /* No additional registers to save, so this macro does nothing. */
+    SAVE_FPU_REGISTERS
+    SAVE_VECTOR_CSRS
+    SAVE_VECTOR_REGISTERS
     .endm
 
 .macro portasmRESTORE_ADDITIONAL_REGISTERS
-    /* No additional registers to restore, so this macro does nothing. */
+    RESTORE_VECTOR_REGISTERS
+    RESTORE_VECTOR_CSRS
+    RESTORE_FPU_REGISTERS
     .endm
-
-#endif
 
 #endif /* __FREERTOS_RISC_V_EXTENSIONS_H__ */

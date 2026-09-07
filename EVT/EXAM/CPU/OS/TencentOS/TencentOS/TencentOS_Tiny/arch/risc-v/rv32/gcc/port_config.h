@@ -28,7 +28,12 @@
 #define TOS_CFG_CPU_LEAD_ZEROS_ASM_PRESENT      0u
 #define TOS_CFG_CPU_BYTE_ORDER                  CPU_BYTE_ORDER_LITTLE_ENDIAN
 
-
+#define ARCH_RISCV_RVV                          0u
+#define __reg_v0_OFFSET                         0
+#define __reg_v1_OFFSET                         8   
+#define VECTOR_GROUP_SIZE                       64  
+#define VECTOR_TOTAL_SIZE                       256 
+#define CSR_SIZE                                12  
 
 /* int reg offset table */
 #define __reg_mepc_OFFSET       0x00

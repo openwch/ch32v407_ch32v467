@@ -24,7 +24,7 @@ u32 Verify_buf[32];
  */
 void CH32_IAP_Program(u32 adr, u32* buf) {
 
-    FLASH_ProgramPage_Fast(adr, buf);
+    FLASH_ROM_WRITE(adr, buf ,256);
 }
 
 

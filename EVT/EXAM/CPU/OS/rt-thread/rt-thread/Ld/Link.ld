@@ -1,6 +1,6 @@
 ENTRY( _start )
 
-__stack_size = 2048;
+__stack_size = 4*1024;
 
 PROVIDE( _stack_size = __stack_size );
 
@@ -37,6 +37,8 @@ SECTIONS
 		*(.text.*)
 		*(.rodata)
 		*(.rodata*)
+        *(.glue_7)
+        *(.glue_7t)		
 		*(.gnu.linkonce.t.*)
 		 /* section information for finsh shell */
 		. = ALIGN(4);
@@ -63,6 +65,17 @@ SECTIONS
 		__rtmsymtab_end = .;
 
 		. = ALIGN(4);
+		
+    PROVIDE(__ctors_start__ = .);
+    KEEP (*(SORT(.init_array.*)))
+    KEEP (*(.init_array))
+    PROVIDE(__ctors_end__ = .);
+    . = ALIGN(4);
+
+    _etext = .;		
+		
+		
+		
 	} >FLASH AT>FLASH 
 
 	.fini :
@@ -183,6 +196,7 @@ SECTIONS
         PROVIDE(_susrstack = . );
         . = . + __stack_size;
         PROVIDE( _eusrstack = .);
+        PROVIDE( __rt_rvstack = . );	
     } >RAM 
 
 }

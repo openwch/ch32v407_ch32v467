@@ -31,8 +31,6 @@ rt_hw_context_switch_to:
     csrw mstatus, a0
     j    rt_hw_context_switch_exit
 
-
-
 /*
  * void rt_hw_context_switch(rt_ubase_t from, rt_ubase_t to);
  * a0 --> from
@@ -40,8 +38,36 @@ rt_hw_context_switch_to:
  */
 	.globl rt_hw_context_switch
 rt_hw_context_switch:
+
+#ifdef ARCH_RISCV_RVV
+
+    addi sp, sp, -12
+    csrr t0, vcsr
+    sw t0, 0(sp)
+    csrr t0, vtype
+    sw t0, 4(sp)
+    csrr t0, vl
+    sw t0, 8(sp)
+
+
+    vsetivli zero, 8, e64, m8
+    /* Save v0-v7 (64 bytes) */
+    addi sp, sp, -64
+    vse64.v v0, (sp)
+    /* Save v8-v15 (64 bytes) */
+    addi sp, sp, -64
+    vse64.v v8, (sp)
+    /* Save v16-v23 (64 bytes) */
+    addi sp, sp, -64
+    vse64.v v16, (sp)
+    /* Save v24-v31 (64 bytes) */
+    addi sp, sp, -64
+    vse64.v v24, (sp)
+#endif
+
 	/* switch in thread */
 #ifdef ARCH_RISCV_FPU
+
 	addi sp, sp, -32*FREGBYTES
 
     FSTORE  f0, 0 * FREGBYTES(sp)
@@ -126,8 +152,6 @@ rt_hw_context_switch:
 	LOAD  sp,  0(a1)
 	j  rt_hw_context_switch_exit
 
-
-
 .global rt_hw_context_switch_exit
 rt_hw_context_switch_exit:
     /* resw ra to mepc */
@@ -137,7 +161,7 @@ rt_hw_context_switch_exit:
     LOAD x1,   1 * REGBYTES(sp)
 
 	/* keep machine mode */
-	li    a0,      0x1800
+	li    a0,      0x1E00
 	csrs  mstatus, a0
 	/* resume MPIE */
 	LOAD  a0,      2*REGBYTES(sp)
@@ -209,6 +233,31 @@ rt_hw_context_switch_exit:
     FLOAD   f30, 30 * FREGBYTES(sp)
     FLOAD   f31, 31 * FREGBYTES(sp)
     addi    sp, sp, 32 * FREGBYTES
+#endif
+
+#ifdef ARCH_RISCV_RVV
+
+   vsetivli zero, 8, e64, m8 
+    /* Restore v24-v31 */
+    vle64.v v24, (sp)
+    addi sp, sp, 64
+    /* Restore v16-v23 */
+    vle64.v v16, (sp)
+    addi sp, sp, 64
+    /* Restore v8-v15 */
+    vle64.v v8, (sp)
+    addi sp, sp, 64
+    /* Restore v0-v7 */
+    vle64.v v0, (sp)
+    addi sp, sp, 64
+
+    /* Restore CSRs: vtype and vl via vsetvl, vcsr via csrw */
+    lw t0, 4(sp)           /* load saved vtype */
+    lw t1, 8(sp)           /* load saved vl */
+    lw t2, 0(sp)           /* load saved vcsr */
+    csrw vcsr, t2
+    vsetvl zero, t1, t0    /* set vl and vtype together (vl=rd, vtype=rs1) */
+    addi sp, sp, 12
 #endif
 
     mret

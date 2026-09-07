@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : usbd_driver_public.h
 * Author             : WCH
-* Version            : V1.2
-* Date               : 2026/05/26
+* Version            : V1.3
+* Date               : 2026/08/25
 * Description        : Usb device driver public headfile.
 *********************************************************************************
 * Copyright (c) 2026 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -25,6 +25,8 @@ extern "C" {
 #include "usb_define.h"
 #include "usb_config.h"
 
+#ifdef USB_DEVICE_DRIVER_EN
+
 /* @define */
 #define USBD_ENDP_FEATURE_NORMAL            (0x00)
 #define USBD_ENDP_FEATURE_ISO               (0x01)
@@ -45,11 +47,11 @@ typedef enum
 typedef struct usbd_handle usbd_handle_t;
 
 /* @callback function */
-typedef void (*event_cb)(usbd_handle_t *h, uint32_t parameter);
-typedef usb_rst_e (*ctrl_setup_cb)(usbd_handle_t *h, const usb_req_t *req, void **buf, size_t *size);
-typedef usb_rst_e (*ctrl_data_cb)(usbd_handle_t *h, const usb_req_t *req, void *buf, size_t size);
-typedef void (*ctrl_status_cb)(usbd_handle_t *h, const usb_req_t *req, void *buf, size_t size);
-typedef endp_resp_e (*data_xfer_cb)(usbd_handle_t *h, usb_endp_t ep, void *buf, size_t size);
+typedef void (*usbd_event_cb)(usbd_handle_t *h, uint32_t parameter);
+typedef usb_rst_e(*usbd_ctrl_setup_cb)(usbd_handle_t *h, const usb_req_t *req, void **buf, size_t *size);
+typedef usb_rst_e(*usbd_ctrl_data_cb)(usbd_handle_t *h, const usb_req_t *req, void *buf, size_t size);
+typedef void (*usbd_ctrl_status_cb)(usbd_handle_t *h, const usb_req_t *req, void *buf, size_t size);
+typedef endp_resp_e(*usbd_data_xfer_cb)(usbd_handle_t *h, usb_endp_t ep, void *buf, size_t size);
 
 /* @function declaration */
 
@@ -61,15 +63,6 @@ typedef endp_resp_e (*data_xfer_cb)(usbd_handle_t *h, usb_endp_t ep, void *buf, 
  * @note Make sure the handle has been initialized before executing this function.
  */
 usb_rst_e usbd_drv_init(usbd_handle_t *h);
-
-/**
- * @brief Usb device driver core task.
- *
- * @param h Usb device driver handle object.
- * @return usb_rst_e Execution result.
- * @note This function is executed in the USB device interrupt handler.
- */
-usb_rst_e usbd_drv_task(usbd_handle_t *h);
 
 /**
  * @brief Enable usb device controller.
@@ -104,22 +97,6 @@ usb_rst_e usbd_open(usbd_handle_t *h, usb_speed_e speed, usb_bool_t sof_en);
  * @return usb_rst_e Execution result.
  */
 usb_rst_e usbd_close(usbd_handle_t *h);
-
-/**
- * @brief Usb device driver enable status.
- *
- * @param h Usb device driver handle object.
- * @return usb_bool_t USB_FALSE: is not enabled, USB_TRUE: is enabled.
- */
-usb_bool_t usbd_is_enable(usbd_handle_t *h);
-
-/**
- * @brief Usb device driver open status.
- *
- * @param h Usb device driver handle object.
- * @return usb_bool_t USB_FALSE: is not opened, USB_TRUE: is opened.
- */
-usb_bool_t usbd_is_open(usbd_handle_t *h);
 
 /**
  * @brief Usb device driver enumeration status.
@@ -212,7 +189,7 @@ usb_rst_e usbd_endp_set_buf(usbd_handle_t *h, usb_endp_t ep, void *buf);
  * @param cb Callback function.
  * @return usb_rst_e Execution result.
  */
-usb_rst_e usbd_register_event_callback(usbd_handle_t *h, usbd_cb_event_e event, event_cb cb);
+usb_rst_e usbd_register_event_callback(usbd_handle_t *h, usbd_cb_event_e event, usbd_event_cb cb);
 
 /**
  * @brief Register usb device driver request control transfer callback.
@@ -226,8 +203,8 @@ usb_rst_e usbd_register_event_callback(usbd_handle_t *h, usbd_cb_event_e event, 
  * @return usb_rst_e Execution result.
  * @note If the setup callback function does not return USB_RST_OK, the driver will respond with a STALL.
  */
-usb_rst_e usbd_register_req_callback(usbd_handle_t *h, uint8_t bmRequestType, uint8_t bRequest, ctrl_setup_cb setup,
-                                     ctrl_data_cb data, ctrl_status_cb status);
+usb_rst_e usbd_register_req_callback(usbd_handle_t *h, uint8_t bmRequestType, uint8_t bRequest,
+                                     usbd_ctrl_setup_cb setup, usbd_ctrl_data_cb data, usbd_ctrl_status_cb status);
 
 /**
  * @brief Register usb device driver interface control transfer callback.
@@ -240,8 +217,8 @@ usb_rst_e usbd_register_req_callback(usbd_handle_t *h, uint8_t bmRequestType, ui
  * @return usb_rst_e Execution result.
  * @note If the setup callback function does not return USB_RST_OK, the driver will respond with a STALL.
  */
-usb_rst_e usbd_register_itf_callback(usbd_handle_t *h, uint16_t itf, ctrl_setup_cb setup, ctrl_data_cb data, 
-                                     ctrl_status_cb status);
+usb_rst_e usbd_register_itf_callback(usbd_handle_t *h, uint16_t itf, usbd_ctrl_setup_cb setup, usbd_ctrl_data_cb data,
+                                     usbd_ctrl_status_cb status);
 
 /**
  * @brief Register usb device driver data transfer callback.
@@ -251,7 +228,7 @@ usb_rst_e usbd_register_itf_callback(usbd_handle_t *h, uint16_t itf, ctrl_setup_
  * @param cb Data transfer callback function.
  * @return usb_rst_e Execution result.
  */
-usb_rst_e usbd_register_data_callback(usbd_handle_t *h, usb_endp_t ep, data_xfer_cb cb);
+usb_rst_e usbd_register_data_callback(usbd_handle_t *h, usb_endp_t ep, usbd_data_xfer_cb cb);
 
 /**
  * @brief Usb device driver data upload.
@@ -274,6 +251,8 @@ usb_rst_e usbd_upload(usbd_handle_t *h, usb_endp_t ep, void *buf, size_t size);
  * @return usb_rst_e Execution result.
  */
 usb_rst_e usbd_download(usbd_handle_t *h, usb_endp_t ep, void *buf, size_t size);
+
+#endif // USB_DEVICE_DRIVER_EN
 
 #ifdef __cplusplus
 }

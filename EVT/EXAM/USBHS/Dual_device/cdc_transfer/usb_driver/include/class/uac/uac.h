@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : uac.h
 * Author             : WCH
-* Version            : V1.2
-* Date               : 2026/05/26
+* Version            : V1.3
+* Date               : 2026/08/25
 * Description        : Uac class define.
 *********************************************************************************
 * Copyright (c) 2026 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -126,18 +126,25 @@ typedef enum
 
 typedef enum
 {
-    UAC_CONTROL_UNDEFINED         = 0x00,
-    UAC_CONTROL_MUTE              = 0x01,
-    UAC_CONTROL_VOLUME            = 0x02,
-    UAC_CONTROL_BASS              = 0x03,
-    UAC_CONTROL_MID               = 0x04,
-    UAC_CONTROL_TREBLE            = 0x05,
-    UAC_CONTROL_GRAPHIC_EQUALIZER = 0x06,
-    UAC_CONTROL_AGC               = 0x07,
-    UAC_CONTROL_DELAY             = 0x08,
-    UAC_CONTROL_BASS_BOOST        = 0x09,
-    UAC_CONTROL_LOUDNESS          = 0x0A,
-} uac_control_selector_e;
+    UAC_FU_CONTROL_UNDEFINED         = 0x00,
+    UAC_FU_CONTROL_MUTE              = 0x01,
+    UAC_FU_CONTROL_VOLUME            = 0x02,
+    UAC_FU_CONTROL_BASS              = 0x03,
+    UAC_FU_CONTROL_MID               = 0x04,
+    UAC_FU_CONTROL_TREBLE            = 0x05,
+    UAC_FU_CONTROL_GRAPHIC_EQUALIZER = 0x06,
+    UAC_FU_CONTROL_AGC               = 0x07,
+    UAC_FU_CONTROL_DELAY             = 0x08,
+    UAC_FU_CONTROL_BASS_BOOST        = 0x09,
+    UAC_FU_CONTROL_LOUDNESS          = 0x0A,
+} uac_fu_control_selector_e;
+
+typedef enum
+{
+    UAC_EP_CONTROL_UNDEFINED     = 0x00,
+    UAC_EP_CONTROL_SAMPLING_FREQ = 0x01,
+    UAC_EP_CONTROL_PITCH         = 0x02,
+} uac_ep_control_selector_e;
 
 typedef enum
 {
@@ -196,17 +203,6 @@ typedef struct
     uint8_t bSourceID;
     uint8_t iTerminal;
 } uac_output_terminal_desc_t;
-
-typedef struct
-{
-    uint8_t bLength;
-    uint8_t bDescriptorType;
-    uint8_t bDescriptorSubtype;
-    uint8_t bUnitID;
-    uint8_t bSourceID;
-    uint8_t bControlSize;
-    uint8_t bmaControls[];
-} uac_feature_unit_desc_t;
 
 typedef struct
 {

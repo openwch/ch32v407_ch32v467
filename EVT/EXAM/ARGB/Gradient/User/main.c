@@ -2,7 +2,7 @@
 * File Name          : main.c
 * Author             : WCH
 * Version            : V1.0.1
-* Date               : 2026/07/01
+* Date               : 2026/08/27
 * Description        : Main program body
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -138,9 +138,9 @@ WS2812_RGBData_u hsv2rgb(WS2812_HSVData_t hsv)
 
 void ARGB_GPIO_Init()
 {
-    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitTypeDef GPIO_InitStructure = {0};
 
-    RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOA, ENABLE);
+    RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOA | RCC_PB2Periph_AFIO, ENABLE);
     GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_15;
     GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_High;
@@ -198,10 +198,10 @@ void ARGB_WS2812B_Init(uint8_t *ARGB_DMA_Buffer, size_t buffer_size)
 
     // Configure ARGB parameters
     ARGB_InitStruct.ARGB_Length     = buffer_size - 1;         // Set buffer length (minus 1 for zero-based indexing)
-    ARGB_InitStruct.ARGB_T1H        = ARGB_US2HBTICK(0.9f);    // Set high time for '1' bit (0.9¦Ìs)
-    ARGB_InitStruct.ARGB_T0H        = ARGB_US2HBTICK(0.3f);    // Set high time for '0' bit (0.3¦Ìs)
-    ARGB_InitStruct.ARGB_DataPeriod = ARGB_US2HBTICK(1.45f);   // Set data bit period (1.45¦Ìs)
-    ARGB_InitStruct.ARGB_RSTPeriod  = ARGB_US2HBTICK(80.0f);   // Set reset period (80¦Ìs)
+    ARGB_InitStruct.ARGB_T1H        = ARGB_US2HBTICK(0.9f);    // Set high time for '1' bit (0.9us)
+    ARGB_InitStruct.ARGB_T0H        = ARGB_US2HBTICK(0.3f);    // Set high time for '0' bit (0.3us)
+    ARGB_InitStruct.ARGB_DataPeriod = ARGB_US2HBTICK(1.45f);   // Set data bit period (1.45us)
+    ARGB_InitStruct.ARGB_RSTPeriod  = ARGB_US2HBTICK(80.0f);   // Set reset period (80us)
     ARGB_InitStruct.ARGB_Mode       = ARGB_Mode_SendRSTFirst;  // Set mode to send reset first
     ARGB_InitStruct.ARGB_Endian     = ARGB_Endian_MSB;         // Set most significant bit first
     ARGB_Init(&ARGB_InitStruct);                          // Apply ARGB configuration

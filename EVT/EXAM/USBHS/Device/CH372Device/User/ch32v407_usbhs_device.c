@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : ch32v407_usbhs_device.c
  * Author             : WCH
- * Version            : V1.0.3
- * Date               : 2026/07/01
+ * Version            : V1.0.4
+ * Date               : 2026/08/27
  * Description        : This file provides all the USBHS firmware functions.
  *********************************************************************************
  * Copyright (c) 2026 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -602,7 +602,7 @@ void USBHS_IRQHandler(void)
                                     {
                                         USBHS_EP0_Buf[0] = 0x01;
                                     }
-
+                                    break;
                                 case(DEF_UEP1 | DEF_UEP_IN):
                                     if(((USBHSD->UEP1_TX_CTRL) & USBHS_UEP_T_RES_MASK) == USBHS_UEP_T_RES_STALL)
                                     {

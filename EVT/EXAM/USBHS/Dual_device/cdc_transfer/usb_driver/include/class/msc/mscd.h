@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : mscd.h
 * Author             : WCH
-* Version            : V1.2
-* Date               : 2026/05/26
+* Version            : V1.3
+* Date               : 2026/08/25
 * Description        : Msc device class define.
 *********************************************************************************
 * Copyright (c) 2026 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -21,6 +21,8 @@ extern "C" {
 #include <stdint.h>
 
 #include "class/msc/msc.h"
+
+#ifdef USB_MSCD_CLASS_CLASS_EN
 
 /* @enum */
 typedef enum
@@ -49,6 +51,8 @@ typedef struct
     __attribute__((aligned(4))) msc_cbw_t cbw;
     __attribute__((aligned(4))) msc_csw_t csw;
 } mscd_interface_t;
+
+#endif // USB_MSCD_CLASS_CLASS_EN
 
 #ifdef __cplusplus
 }

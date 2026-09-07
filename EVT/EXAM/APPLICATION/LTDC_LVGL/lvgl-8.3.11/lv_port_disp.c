@@ -11,19 +11,19 @@
  *********************/
 #include "lv_port_disp.h"
 #include <stdbool.h>
-#include "debug.h" 
+#include "debug.h"
 
 /*********************
  *      DEFINES
  *********************/
 #ifndef MY_DISP_HOR_RES
 //    #warning Please define or replace the macro MY_DISP_HOR_RES with the actual screen width, default value 320 is used for now.
-#define MY_DISP_HOR_RES 240
+#define MY_DISP_HOR_RES 800
 #endif
 
 #ifndef MY_DISP_VER_RES
 //    #warning Please define or replace the macro MY_DISP_HOR_RES with the actual screen height, default value 240 is used for now.
-#define MY_DISP_VER_RES 240
+#define MY_DISP_VER_RES 480
 #endif
 
 /**********************
@@ -52,6 +52,9 @@ static lv_disp_drv_t disp_drv; /*Descriptor of a display driver*/
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
+ 
+
+extern uint8_t* global_layer;
 
 void lv_port_disp_init(void)
 {
@@ -86,9 +89,9 @@ void lv_port_disp_init(void)
      */
 
     /* Example for 1) */
-    static lv_disp_draw_buf_t draw_buf_dsc_1;
-    static lv_color_t         buf_1[MY_DISP_HOR_RES * 10];                     /*A buffer for 10 rows*/
-    lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, MY_DISP_HOR_RES * 10); /*Initialize the display buffer*/
+    // static lv_disp_draw_buf_t draw_buf_dsc_1;
+    // static lv_color_t         buf_1[MY_DISP_HOR_RES * 10];                     /*A buffer for 10 rows*/
+    // lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, MY_DISP_HOR_RES * 10); /*Initialize the display buffer*/
 
     /* Example for 2) */
     // static lv_disp_draw_buf_t draw_buf_dsc_2;
@@ -97,12 +100,17 @@ void lv_port_disp_init(void)
     // lv_disp_draw_buf_init(&draw_buf_dsc_2, buf_2_1, buf_2_2, MY_DISP_HOR_RES * 10); /*Initialize the display buffer*/
 
     /* Example for 3) also set disp_drv.full_refresh = 1 below*/
-    // static lv_disp_draw_buf_t draw_buf_dsc_3;
+    static lv_disp_draw_buf_t draw_buf_dsc_3;
 
-    // static lv_color_t buf_3_1[MY_DISP_HOR_RES * MY_DISP_VER_RES]; /*A screen sized buffer*/
-    // static lv_color_t buf_3_2[MY_DISP_HOR_RES * MY_DISP_VER_RES]; /*Another screen sized buffer*/
-    // lv_disp_draw_buf_init(&draw_buf_dsc_3, buf_3_1, buf_3_2,
-    //                       MY_DISP_VER_RES * MY_DISP_HOR_RES); /*Initialize the display buffer*/
+    extern const void *LTDC_layer1;
+    extern const void *LTDC_layer2;
+    
+      lv_color_t* buf_3_1 = (void *)LTDC_layer1;
+     /*A screen sized buffer*/
+      lv_color_t* buf_3_2 = (void *)LTDC_layer2;
+     /*Another screen sized buffer*/
+    lv_disp_draw_buf_init(&draw_buf_dsc_3, buf_3_1, buf_3_2,
+                          MY_DISP_VER_RES * MY_DISP_HOR_RES); /*Initialize the display buffer*/
 
     /*-----------------------------------
      * Register the display in LVGL
@@ -120,10 +128,10 @@ void lv_port_disp_init(void)
     disp_drv.flush_cb = disp_flush;
 
     /*Set a display buffer*/
-    disp_drv.draw_buf = &draw_buf_dsc_1;
+    disp_drv.draw_buf = &draw_buf_dsc_3;
 
     /*Required for Example 3)*/
-    // disp_drv.full_refresh = 1;
+    disp_drv.full_refresh = 1;
 
     /* Fill a memory array with a color if you have GPU.
      * Note that, in lv_conf.h you can enable GPUs that has built-in support in LVGL.
@@ -160,23 +168,7 @@ void disp_disable_update(void)
     disp_flush_enabled = false;
 }
 
-void* memcpy16(void* dest, const void* src, size_t count)
-{
-    uint16_t*       d = (uint16_t*)dest;
-    const uint16_t* s = (const uint16_t*)src;
 
-    void* original_dest = dest;
-
-    while (count--)
-    {
-        *d++ = *s++;
-    }
-
-    return original_dest;
-}
-
-extern uint8_t   layer1[];
-static uint16_t* display1 = (void*)layer1;
 /*Flush the content of the internal buffer the specific area on the display
  *You can use DMA or any hardware acceleration to do this operation in the background but
  *'lv_disp_flush_ready()' has to be called when finished.*/
@@ -184,22 +176,14 @@ static void disp_flush(lv_disp_drv_t* disp_drv, const lv_area_t* area, lv_color_
 {
     if (disp_flush_enabled)
     {
-
-        int32_t x;
-        int32_t y;
-        for (y = area->y1; y <= area->y2; y++)
-        {
-            for (x = area->x1; x <= area->x2; x++)
-            {
-                uint16_t color  = color_p->full;
-                uint32_t index  = (y * MY_DISP_HOR_RES + x);
-                display1[index] = color;
-                color_p++;
-            }
-        }
-
-        lv_disp_flush_ready(disp_drv);
+        global_layer = (void*)color_p;
+        // lv_disp_flush_ready(disp_drv);
     }
+}
+
+void ltdc_flushed()
+{
+    lv_disp_flush_ready(&disp_drv);
 }
 
 /*OPTIONAL: GPU INTERFACE*/

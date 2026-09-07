@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : hid.h
 * Author             : WCH
-* Version            : V1.2
-* Date               : 2026/05/26
+* Version            : V1.3
+* Date               : 2026/08/25
 * Description        : Hid class define.
 *********************************************************************************
 * Copyright (c) 2026 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -324,6 +324,29 @@ typedef enum
     HID_PROTOCOL_BOOT,
     HID_PROTOCOL_REPORT,
 } hid_protocol_e;
+
+/* @struct */
+/* Start single-byte alignment */
+#pragma pack(1)
+
+typedef struct
+{
+    uint8_t bLength;
+    uint8_t bDescriptorType;
+    uint16_t bcdHID;
+    uint8_t bCountryCode;
+    uint8_t bNumDescriptors;
+
+    struct
+    {
+        uint8_t bDescriptorType;
+        uint16_t wDescriptorLength;
+    } desc[1];
+
+} desc_hid_t;
+
+/* End single-byte alignment */
+#pragma pack()
 
 #ifdef __cplusplus
 }
