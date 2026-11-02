@@ -18,6 +18,8 @@ void USART3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
  *
  * @brief   Initializes the USART3 peripheral.
  *
+ * @param   baudrate - USART3 baud rate in bit/s
+ *
  * @return  none
  */
 void uart3_init (uint32_t baudrate) {
@@ -59,8 +61,9 @@ void uart3_init (uint32_t baudrate) {
 
 /**
  * @brief  uart3 dma send channel configuration
- * @param
- * @retval
+ * @param  mem_addr - pointer to the data buffer
+ * @param  mem_size - number of bytes to transfer
+ * @retval none
  */
 void uart3_dmatx_config (uint8_t *mem_addr, uint32_t mem_size) {
     DMA_InitTypeDef DMA_InitStructure = {0};
@@ -85,8 +88,9 @@ void uart3_dmatx_config (uint8_t *mem_addr, uint32_t mem_size) {
 }
 /**
  * @brief  uart3 dma send enable
- * @param
- * @retval
+ * @param  mem_addr - pointer to the data buffer
+ * @param  mem_size - number of bytes to transfer
+ * @retval none
  */
 void uart3_dmatx_send (uint8_t *mem_addr, uint32_t mem_size) {
     DMA1_Channel2->CFGR &= ~0x00000001;
@@ -98,8 +102,9 @@ void uart3_dmatx_send (uint8_t *mem_addr, uint32_t mem_size) {
 
 /**
  * @brief  uart3 dma receive channel configuration
- * @param
- * @retval
+ * @param  mem_addr - pointer to the data buffer
+ * @param  mem_size - number of bytes to transfer
+ * @retval none
  */
 void uart3_dmarx_config (uint8_t *mem_addr, uint32_t mem_size) {
     DMA_InitTypeDef DMA_InitStructure = {0};
@@ -141,8 +146,8 @@ uint16_t uart_get_dmarx_buf_remain_size (uint8_t uart_id) {
 
 /**
  * @brief  UART DMA Rx completion ISR
- * @param
- * @retval
+ * @param  uart_id - UART device index (DEV_UART3)
+ * @retval none
  */
 void uart_dmarx_done_isr (uint8_t uart_id) {
     uint16_t recv_size;
@@ -157,8 +162,8 @@ void uart_dmarx_done_isr (uint8_t uart_id) {
 
 /**
  * @brief  UART DMA HT (Half-Transfer) ISR
- * @param
- * @retval
+ * @param  uart_id - UART device index (DEV_UART3)
+ * @retval none
  */
 void uart_dmarx_half_done_isr (uint8_t uart_id) {
     uint16_t recv_total_size;
@@ -176,8 +181,8 @@ void uart_dmarx_half_done_isr (uint8_t uart_id) {
 
 /**
  * @brief  UART IDLE ISR
- * @param
- * @retval
+ * @param  uart_id - UART device index (DEV_UART3)
+ * @retval none
  */
 void uart_dmarx_idle_isr (uint8_t uart_id) {
     uint16_t recv_total_size;
@@ -196,8 +201,8 @@ void uart_dmarx_idle_isr (uint8_t uart_id) {
 
 /**
  * @brief  UART DMA TC (Transfer Complete) ISR
- * @param
- * @retval
+ * @param  uart_id - UART device index (DEV_UART3)
+ * @retval none
  */
 void uart_dmatx_done_isr (uint8_t uart_id) {
     s_uart_dev[uart_id].status = 0;
@@ -261,6 +266,6 @@ void USART3_IRQHandler(void)
     if(USART_GetITStatus(USART3, USART_IT_IDLE) != RESET)
 	{
 		uart_dmarx_idle_isr(DEV_UART3);
-		USART_ReceiveData(USART3);//清空闲标志
+		USART_ReceiveData(USART3);//clear the idle flag
 	}
 }

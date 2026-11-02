@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/06/06
+* Version            : V1.0.2
+* Date               : 2026/10/16
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -16,7 +16,7 @@
  Master:USART2_Tx(PA2)\USART2_Rx(PA3).
  Slave:USART3_Tx(PB10)\USART3_Rx(PB11).
 
- This example demonstrates UART2 and USART3 use DAM data to send and receive.
+ This example demonstrates UART2 and USART3 use DMA data to send and receive.
 
     Hardware connection:PA2 -- PB11
                PA3 -- PB10
@@ -152,7 +152,7 @@ void DMA_INIT(void)
     DMA_InitStructure.DMA_PeripheralBaseAddr = (u32)(&USART2->DATAR);
     DMA_InitStructure.DMA_MemoryBaseAddr = (u32)RxBuffer1;
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
-    DMA_InitStructure.DMA_BufferSize = TxSize2;
+    DMA_InitStructure.DMA_BufferSize = TxSize1;
     DMA_Init(DMA1_Channel6, &DMA_InitStructure);
 
     DMA_DeInit(DMA1_Channel2);
@@ -166,8 +166,64 @@ void DMA_INIT(void)
     DMA_InitStructure.DMA_PeripheralBaseAddr = (u32)(&USART3->DATAR);
     DMA_InitStructure.DMA_MemoryBaseAddr = (u32)RxBuffer2;
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
-    DMA_InitStructure.DMA_BufferSize = TxSize1;
+    DMA_InitStructure.DMA_BufferSize = TxSize2;
     DMA_Init(DMA1_Channel3, &DMA_InitStructure);
+}
+
+/*********************************************************************
+ * @fn      DMA_StartTransfer
+ *
+ * @brief   Starts a DMA transfer on the given channel without waiting.
+ *
+ * @param   DMAy_Channelx - DMA channel used for the transfer
+ *          Data          - pointer to the data buffer
+ *          DataLength    - number of bytes to transfer
+ *
+ * @return  none
+ */
+void DMA_StartTransfer(DMA_Channel_TypeDef *DMAy_Channelx, uint8_t *Data, uint16_t DataLength)
+{
+    DMA_Cmd(DMAy_Channelx, DISABLE);
+    /* Point to the new data buffer */
+    DMAy_Channelx->MADDR = (uint32_t)Data;
+    /* Set the transfer byte count */
+    DMAy_Channelx->CNTR = DataLength;
+    /* Start the transfer */
+    DMA_Cmd(DMAy_Channelx, ENABLE);
+}
+
+/*********************************************************************
+ * @fn      DMA_SendData
+ *
+ * @brief   Starts a TX transfer through the given DMA channel.
+ *          The caller must wait for the TC flag before reusing the buffer.
+ *
+ * @param   DMAy_Channelx - DMA channel used for the TX transfer
+ *          Data          - pointer to the data buffer to send
+ *          DataLength    - number of bytes to send
+ *
+ * @return  none
+ */
+void DMA_SendData(DMA_Channel_TypeDef *DMAy_Channelx, uint8_t *Data, uint16_t DataLength)
+{
+    DMA_StartTransfer(DMAy_Channelx, Data, DataLength);
+}
+
+/*********************************************************************
+ * @fn      DMA_ReceiveData
+ *
+ * @brief   Starts an RX transfer through the given DMA channel.
+ *          The caller must wait for the TC flag before reading the buffer.
+ *
+ * @param   DMAy_Channelx - DMA channel used for the RX transfer
+ *          Data          - pointer to the receive buffer
+ *          DataLength    - number of bytes to receive
+ *
+ * @return  none
+ */
+void DMA_ReceiveData(DMA_Channel_TypeDef *DMAy_Channelx, uint8_t *Data, uint16_t DataLength)
+{
+    DMA_StartTransfer(DMAy_Channelx, Data, DataLength);
 }
 
 /*********************************************************************
@@ -224,7 +280,46 @@ int main(void)
     printf("TxBuffer2:%s\r\n", TxBuffer2);
     printf("RxBuffer2:%s\r\n", RxBuffer2);
 
+    /* Enable USART3 RX DMA (CH3) transfer-complete interrupt */
+    DMA_ITConfig(DMA1_Channel3, DMA_IT_TC, ENABLE);
+    NVIC_EnableIRQ(DMA1_Channel3_IRQn);
+
     while(1)
     {
+        Delay_Ms(1000);  
+
+        /* Re-arm USART3 RX DMA (CH3); received data is printed in the ISR */
+        DMA_ReceiveData(DMA1_Channel3, RxBuffer2, TxSize1);
+
+        /* Send one frame via USART2 TX DMA (CH7) */
+        DMA_SendData(DMA1_Channel7, TxBuffer1, TxSize1);
+
+        /* Wait TX transfer complete */
+        while(DMA_GetFlagStatus(DMA1_FLAG_TC7) == RESET)
+        {
+        }
+
+        /* Clear the TX transfer-complete flag */
+        DMA_ClearFlag(DMA1_FLAG_TC7);
     }
 }
+
+
+
+/*********************************************************************
+ * @fn      DMA1_Channel3_IRQHandler
+ *
+ * @brief   USART3 RX DMA (CH3) transfer-complete interrupt.
+ *
+ * @return  none
+ */
+void DMA1_Channel3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+void DMA1_Channel3_IRQHandler(void)
+{
+    if(DMA_GetITStatus(DMA1_IT_TC3) != RESET)
+    {
+        DMA_ClearITPendingBit(DMA1_IT_TC3);
+        printf("Recv: %s\r\n", RxBuffer2);
+    }
+}
+

@@ -13,7 +13,7 @@
 #define __CH32V4x7_IT_H
 
 #include "debug.h"
-
+extern volatile u8 publishValid;
 
 #endif /* __CH32V4x7_IT_H */
 

@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/12/01
+* Version            : V1.0.1
+* Date               : 2026/10/19
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -23,10 +23,11 @@
 #include "debug.h"
 
 /* Global Variable */
-u32 TxBuf[1];
-u16 Adc_Val[4];
-u32 temp;
-
+vu32 TxBuf[1];
+vu16 Adc_Val[4];
+vs16 Calibrattion_Val1 = 0;
+vs16 Calibrattion_Val2 = 0;
+vu8  IntResponse=0 ;
 void DMA1_Channel12_IRQHandler(void)   __attribute__((interrupt("WCH-Interrupt-fast")));
 /*********************************************************************
  * @fn      ADC_Function_Init
@@ -146,6 +147,11 @@ int main(void)
         ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 
         Delay_Ms(500);
+		if(IntResponse == 1)
+	    {
+		  printf( "ADC1 ch2=%d\r\n",  Adc_Val[0]  );
+          printf( "ADC2 ch3=%d\r\n",  Adc_Val[1]  );
+        }
     }
 }
 
@@ -162,14 +168,12 @@ void DMA1_Channel12_IRQHandler()
 {
     if(DMA_GetITStatus(DMA1_IT_TC12)==SET )
     {
-        DMA_ClearITPendingBit(DMA1_IT_GL12);
+        DMA_ClearITPendingBit( DMA1_IT_TC12 );
 
-        Adc_Val[0]=TxBuf[0]&0xffff;
-        Adc_Val[1]=(TxBuf[0]>>16)&0xffff;
-#if 1
-        printf("ADC1 ch2=%d\r\n",Adc_Val[0]);
-        printf("ADC2 ch3=%d\r\n",Adc_Val[1]);
-#endif
+			  IntResponse=1;						
+        Adc_Val[0] = TxBuf[0] & 0xffff;
+        Adc_Val[1] = ( TxBuf[0] >> 16 ) & 0xffff;
+
     }
 }
 

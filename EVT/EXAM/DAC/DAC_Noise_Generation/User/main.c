@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/12/01
+* Version            : V1.0.1
+* Date               : 2026/10/18
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -71,7 +71,7 @@ void DAC1_Nosie_Gen_Test(void)
 {
     DAC->SWTR |= 0x01; /* Set by software, Reset by hardware */
     __asm volatile("nop");
-    printf("DOR1=0x%04x\r\n", DAC->DOR1); /* Value will be 0x0AAA,0x0D55,0x0EAA ... */
+   // printf("DOR1=0x%04x\r\n", DAC->DOR1); /* Value will be 0x0AAA,0x0D55,0x0EAA ... */
 }
 
 

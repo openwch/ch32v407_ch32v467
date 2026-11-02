@@ -42,6 +42,11 @@ void AnalyzeKeyValue_And_UploadData( uint8_t id_flag, uint8_t endp, uint8_t *pbu
 
     id_flag ? (id = 1) : (id = 0);
 
+    if( len < id + 3 )
+    {
+        return;
+    }
+
     if(s_upload == DEF_STATE_WAIT_WIN)
     {
         if(pbuf[id] == DEF_KEY_WIN)
@@ -106,7 +111,7 @@ void AnalyzeKeyValue_And_UploadData( uint8_t id_flag, uint8_t endp, uint8_t *pbu
         if(id)
         {
             buf_0[0] = pbuf[0]; //report id
-            for (uint8_t j = 8; j >= 0; j--) 
+            for (int8_t j = 8; j >= 0; j--) 
             {
                 buf_1[j + 1] = buf_1[j];
                 buf_2[j + 1] = buf_2[j];
@@ -377,7 +382,7 @@ void USBH_MainDeal( void )
                         /* Get endpoint data based on the interval time of the device */
                         if( HostCtl[ index ].Interface[ intf_num ].InEndpTimeCount[ in_num ] >= HostCtl[ index ].Interface[ intf_num ].InEndpInterval[ in_num ] )
                         {
-                            HostCtl[ index ].Interface[ intf_num ].InEndpTimeCount[ in_num ] %= HostCtl[ index ].Interface[ intf_num ].InEndpInterval[ in_num ];
+                            HostCtl[ index ].Interface[ intf_num ].InEndpTimeCount[ in_num ] %= HostCtl[ index ].Interface[ intf_num ].InEndpInterval[ in_num ] ? HostCtl[ index ].Interface[ intf_num ].InEndpInterval[ in_num ] : 1;
                
                             /* Get endpoint data */
                             s = USBH_GetHidData( usb_port, index, intf_num, in_num, Com_Buf, &len );

@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
 * File Name          : ch32v4x7_psram.h
 * Author             : WCH
-* Version            : V1.0.1
-* Date               : 2026/07/01
+* Version            : V1.0.2
+* Date               : 2026/10/16
 * Description        : This file contains all the functions prototypes for the PSRAM
 *                      firmware library.
 *********************************************************************************
@@ -41,38 +41,22 @@
 
 
 /*PSRAM  speed set*/
-#define Fre_66M              ((uint32_t)0x42)
-#define Fre_109M             ((uint32_t)0x6D)
+
 #define Fre_133M             ((uint32_t)0x85)
 #define Fre_166M             ((uint32_t)0xA6)
 #define Fre_200M             ((uint32_t)0xC8)
-#define Fre_225M             ((uint32_t)0xE1)
-#define Fre_250M             ((uint32_t)0xFA)
-#define Fre_300M             ((uint32_t)0x12C)
-#define Fre_333M             ((uint32_t)0x14D)
-#define Fre_400M             ((uint32_t)0x190)
+
 /*PSRAM  speed select*/
-#define MR4_Write_66M        ((uint32_t)0x0)
-#define MR4_Write_109M       ((uint32_t)0x4)
 #define MR4_Write_133M       ((uint32_t)0x2)
 #define MR4_Write_166M       ((uint32_t)0x6)
 #define MR4_Write_200M       ((uint32_t)0x1)
-#define MR4_Write_225M       ((uint32_t)0x5)
-#define MR4_Write_250M       ((uint32_t)0x3)
-#define MR4_Write_300M       ((uint32_t)0x7)
-#define MR4_Write_333M       ((uint32_t)0x0)
-#define MR4_Write_400M       ((uint32_t)0x4)
 
-#define MR0_Read_66M         ((uint32_t)0x0)
-#define MR0_Read_109M        ((uint32_t)0x1)
+
+
 #define MR0_Read_133M        ((uint32_t)0x2)
 #define MR0_Read_166M        ((uint32_t)0x3)
 #define MR0_Read_200M        ((uint32_t)0x4)
-#define MR0_Read_225M        ((uint32_t)0x5)
-#define MR0_Read_250M        ((uint32_t)0x6)
-#define MR0_Read_300M        ((uint32_t)0x7)
-#define MR0_Read_333M        ((uint32_t)0x0)
-#define MR0_Read_400M        ((uint32_t)0x1)
+
 
 /*PSRAM  Latency select*/
 #define Latency_66M        ((uint32_t)0x3)
@@ -80,11 +64,6 @@
 #define Latency_133M       ((uint32_t)0x5)
 #define Latency_166M       ((uint32_t)0x6)
 #define Latency_200M       ((uint32_t)0x7)
-#define Latency_225M       ((uint32_t)0x8)
-#define Latency_250M       ((uint32_t)0x9)
-#define Latency_300M       ((uint32_t)0xb)
-#define Latency_333M       ((uint32_t)0xc)
-#define Latency_400M       ((uint32_t)0x10)
 
 /*PSRAM  Read Latency Type select*/
 #define Read_Variable        ((uint32_t)0x0)

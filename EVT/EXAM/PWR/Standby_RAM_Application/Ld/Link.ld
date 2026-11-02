@@ -9,12 +9,19 @@ MEMORY
 {
 	/*
 	FLASH + RAM supports the following configuration
-	For specific choices, please refer :CH32V4x7RM.PDF\Table 32-3
+	For specific choices, please refer :CH32V407RM.PDF\Table 32-4
 	FLASH-576K + RAM-136K
-	FLASH-512 +  RAM-200K
+	FLASH-512K + RAM-200K   (V407VET - V407WEU - V407RET - V467VET - V467WEU - V467RET)
+    Reserve 1KB RMA for vector stack push.
 	*/
 	FLASH (rx) : ORIGIN = 0x00000000, LENGTH = 576K
-	RAM (xrw) : ORIGIN = 0x20000000+1024, LENGTH = 136K-1K
+	RAM (xrw) : ORIGIN = 0x20000000+1024, LENGTH = 136K-1K    
+    
+	/*FLASH-480K + RAM-200K   (V407KEU)*/
+	/*
+	FLASH (rx) : ORIGIN = 0x00000000, LENGTH = 480K
+	RAM (xrw) : ORIGIN = 0x20000000+1024, LENGTH = 200K-1K    
+	*/
 }
 
 

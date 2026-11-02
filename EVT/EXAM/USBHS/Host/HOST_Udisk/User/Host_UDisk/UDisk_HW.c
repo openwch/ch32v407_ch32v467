@@ -12,7 +12,7 @@
 
 /*******************************************************************************/
 /* Header File */
-#include "Udisk_Operation.h"
+#include "UDisk_Operation.h"
 
 /*******************************************************************************/
 /* Variable Definition */
@@ -43,12 +43,12 @@ void mStopIfError( uint8_t iError )
     }
     /* Display the errors */
     printf( "Error:%02x\r\n", iError );
-    /* After encountering an error, you should analyze the error code and CH103DiskReday status, for example,
-     * call CH103DiskReday to check whether the current USB disk is connected or not,
+    /* After encountering an error, you should analyze the error code and CHRV3DiskReady status, for example,
+     * call CHRV3DiskReady to check whether the current USB disk is connected or not,
      * if the disk is disconnected then wait for the disk to be plugged in again and operate again,
      * Suggested steps to follow after an error:
-     *     1,call CH103DiskReday once, if successful, then continue the operation, such as Open, Read/Write, etc.
-     *     2,If CH103DiskReday is not successful, then the operation will be forced to start from the beginning.
+     *     1,call CHRV3DiskReady once, if successful, then continue the operation, such as Open, Read/Write, etc.
+     *     2,If CHRV3DiskReady is not successful, then the operation will be forced to start from the beginning.
      */
     while(1)
     {  }
@@ -245,7 +245,7 @@ uint8_t USBH_GetConfigDescr( uint8_t usb_port, uint16_t *pcfg_len )
 }
 
 /*********************************************************************
- * @fn      USBHSH_SetUsbConfig
+ * @fn      USBH_SetUsbConfig
  *
  * @brief   Set USB configuration.
  *
@@ -328,7 +328,7 @@ ENUM_START:
     if( s == ERR_SUCCESS )
     {
         /* Print USB device device descriptor */
-#if DEF_DEBUG_printfF
+#if DEF_DEBUG_PRINTF
         for( i = 0; i < 18; i++ )
         {
             printf( "%02x ", DevDesc_Buf[ i ] );
@@ -374,7 +374,7 @@ ENUM_START:
         cfg_val = ( (PUSB_CFG_DESCR)Com_Buffer )->bConfigurationValue;
 
         /* Print USB device configuration descriptor  */
-#if DEF_DEBUG_printfF
+#if DEF_DEBUG_PRINTF
         for( i = 0; i < len; i++ )
         {
             printf( "%02x ", Com_Buffer[ i ] );
@@ -415,7 +415,7 @@ ENUM_START:
 }
 
 /*********************************************************************
- * @fn      IAP_USBH_PreDeal
+ * @fn      UDisk_USBH_PreDeal
  *
  * @brief   usb host preemption operations, 
   *         including detecting device insertion and enumerating device information 
@@ -491,14 +491,14 @@ uint8_t UDisk_USBH_DiskReady( void )
               {
                   /* Disk Ready */
                   printf( "Disk Ready Code:%02x.\r\n", ret );
-                  printf( "CH103DiskStatus:%02x\n", CHRV3DiskStatus);
+                  printf( "CHRV3DiskStatus:%02x\n", CHRV3DiskStatus);
                   UDisk_Opeation_Flag = 1;
                   return DISK_READY;
               }
               else
               {
                   printf("Not Ready Code :%02x.\r\n", ret);
-                  printf("CH103DiskStatus:%02x.\n", CHRV3DiskStatus);
+                  printf("CHRV3DiskStatus:%02x.\n", CHRV3DiskStatus);
               }
               Delay_Ms( 50 );
           }

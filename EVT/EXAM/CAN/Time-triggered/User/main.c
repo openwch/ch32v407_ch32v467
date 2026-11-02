@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.1
-* Date               : 2026/06/30
+* Version            : V1.0.2
+* Date               : 2026/10/16
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -63,6 +63,8 @@ const CANPinTable_t CANRXPinTable[] = {
 CAN_TypeDef *CANTable[] = {CAN1};
 
 volatile uint8_t TxBuff[8], RxBuff[8];
+volatile uint8_t rx_done_flag = 0;
+volatile uint8_t rx_done_len = 0;
 
 uint8_t mbox;
 
@@ -276,6 +278,17 @@ int main(void)
         Circle_CNT++;
         Delay_Ms(500);
 #endif
+        /* The receive print was moved from the ISR into the main loop. */
+        if (rx_done_flag)
+        {
+            rx_done_flag = 0;
+            printf("Receive data: ");
+            for (uint8_t i = 0; i < rx_done_len; i++)
+            {
+                printf("%#04x ", RxBuff[i]);
+            }
+            printf("\n");
+        }
     }
 }
 
@@ -285,12 +298,17 @@ __attribute__((interrupt("WCH-Interrupt-fast"))) void CAN1_RX0_IRQHandler()
     if (CAN_GetITStatus(CAN1, CAN_IT_FMP0))
     {
         px = CAN_Receive_Msg(CAN1, (uint8_t *)RxBuff);
-        printf("Receive data: ");
-        for (int i = 0; i < px; i++)
+        /* Avoid printf inside the ISR (blocking, not reentrant): store the
+         * length and pending flag, print in the main loop. */
+        if(px > 8)
         {
-            printf("%#04x ", RxBuff[i]);
+            px = 8;
         }
-        printf("\n");
+        if(px)
+        {
+            rx_done_len = px;
+            rx_done_flag = 1;
+        }
         CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
     }
 }

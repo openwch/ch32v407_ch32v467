@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/07/06
+* Version            : V1.0.1
+* Date               : 2026/10/16
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -181,6 +181,7 @@ int main(void)
 
         while ((!DMA_GetFlagStatus(DMA1_FLAG_TC6)))
             ;
+        DMA_ClearFlag(DMA1_FLAG_TC6);
     while( !I2C_CheckEvent( I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED ) );
     I2C_GenerateSTOP( I2C1, ENABLE );
 	Delay_Ms(300);
@@ -198,6 +199,7 @@ int main(void)
     DMA_Cmd( DMA1_Channel7, ENABLE );
     
     while( ( !DMA_GetFlagStatus( DMA1_FLAG_TC7 ) ) );
+    DMA_ClearFlag( DMA1_FLAG_TC7 );
 
     while(I2C_GetFlagStatus(I2C1, I2C_FLAG_STOPF) == RESET);
     I2C1->CTLR1 &= I2C1->CTLR1;

@@ -1,9 +1,9 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : FSMC_NOR.c
-* Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/12/01
-* Description        : This file contains the headers of the FSMC_NOR.
+ * File Name          : FSMC_NOR.c
+ * Author             : WCH
+ * Version            : V1.0.2
+ * Date               : 2026/10/14
+ * Description        : This file contains the headers of the FSMC_NOR.
 *********************************************************************************
 * Copyright (c) 2024 Nanjing Qinheng Microelectronics Co., Ltd.
 * Attention: This software (modified or not) and binary are used for
@@ -300,12 +300,12 @@ NOR_Status NOR_EraseChip(void)
  *          or NOR_TIMEOUT
  */
 
-void Fill_Buffer(uint16_t *pBuffer, uint16_t BufferLenght, uint32_t Offset)
+void Fill_Buffer(uint16_t *pBuffer, uint16_t BufferLength, uint32_t Offset)
 {
     uint16_t IndexTmp = 0;
 
     /* Put in global buffer same values */
-    for (IndexTmp = 0; IndexTmp < BufferLenght; IndexTmp++ )
+    for (IndexTmp = 0; IndexTmp < BufferLength; IndexTmp++ )
     {
         pBuffer[IndexTmp] =IndexTmp + Offset;
     }

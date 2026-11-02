@@ -1,5 +1,5 @@
 
-南京沁恒微电子股份有限公司 2026.08
+南京沁恒微电子股份有限公司 2026.10
 最新资料请到我们的网站上查询
 https://wch.cn
 
@@ -39,6 +39,12 @@ https://wch.cn
   |      |      |      |      |-- LTDC_LVGL：使用LTDC 在屏幕上显示动画
   |      |      |      |      |-- RunInPSRAM: 在PSRAM运行Coremark跑分例程
   |      |      |      |      |-- AIoCHub: AIoCHub 云平台应用
+  |      |      |      |      |-- JPEG_decode_LTDC: LTDC 静态显示解码图片
+  |      |      |      |      |-- CherryUSB: CherryUSB仓库地址及简介
+  |      |      |      |      |-- EEPROM_Emulation: 例程演示了flash 模拟EEPROM
+  |      |      |      |      |-- FATFS: 
+  |      |      |      |      |      |-- FATFS_SPI_FLASH: 此示例演示了使用FATFS的Winbond W25Qxx SPIFLASH的SPI操作
+  |      |      |      |      |      |-- FATFS_SDIO_SD: 此示例演示了如何通过带有FATFS的SDIO接口读写SD卡的全部扇区
   |      |      |      |-- ARGB
   |      |      |      |      |-- Gradient：ARGB例程
   |      |      |      |      |-- PollingFilling: 轮询和中断方式驱动ARGB
@@ -75,8 +81,10 @@ https://wch.cn
   |      |      |      |      |-- DVP_TFTLCD：DVP操作OV2640摄像头视频模式在LCD显示图像例程
   |      |      |      |      |-- DVP_UART：DVP操作OV2640摄像头JPEG模式例程
   |      |      |      |-- ETH
+  |      |      |      |      |-- 1_Tool_Doc：例程相关文档及配置软件
   |      |      |      |      |-- DHCP：演示DHCP自动获取IP，并建立TCP连接进行数据回传
-  |      |      |      |      |-- DNS：DHCP自动获取ip后，再请求域名解析演示例程  
+  |      |      |      |      |-- DNS：DHCP自动获取ip后，再请求域名解析演示例程
+  |      |      |      |      |-- DualNetPorts: 双网口例程  
   |      |      |      |      |-- ETH_CFG：ETH_CFG例程，创建一个UDP Server用于与上位机通信，以配置WCHNET功能，包括各项参数以及创建一个新的通信
   |      |      |      |      |-- ETH_IAP：演示通过TCP数据传输，进行IAP
   |      |      |      |      |-- ETH_UART：演示以太网与UART的数据透传。默认使用1000000波特率（可在bsp_uart.h中更改）进行串口数据传输
@@ -137,6 +145,7 @@ https://wch.cn
   |      |      |      |      |-- Standby_RAM_Application：待机模式，RAM 32K低功耗数据保持应用例程
   |      |      |      |      |-- PVD_Wakeup：STOP模式PVD中断唤醒例程
   |      |      |      |      |-- PVD_VoltageJudger：PVD电压判定例程
+  |      |      |      |      |-- Stop_Mode_RTC_WakeUp: 示例演示了使用RTC定时器从停止模式周期性唤醒
   |      |      |      |-- RCC
   |      |      |      |      |-- Get_CLK：获取system-HCLK-AHB1-AHB2时钟例程  
   |      |      |      |      |-- MCO：MCO引脚时钟输出例程
@@ -158,6 +167,8 @@ https://wch.cn
   |      |      |      |      |-- SPI_DMA：SPI使用DMA，Master/Slave 模式收发例程
   |      |      |      |      |-- SPI_FLASH：SPI接口操作FLASH外设例程
   |      |      |      |      |-- SPI_LCD：SPI接口操作FLASH和LCD例程
+  |      |      |      |      |-- SPI_DMA_EXT: SPI主从设备使用DMA全双工传输和接收例程
+  |      |      |      |      |-- SPI_SDCARD: SPI 驱动SD卡例程
   |      |      |      |-- SDI_Printf
   |      |      |      |      |-- SDI_Printf：调试接口SDI虚拟串口 
   |      |      |      |-- TIM
@@ -186,6 +197,7 @@ https://wch.cn
   |      |      |      |      |-- USART_Printf：串口打印调试例程
   |      |      |      |      |-- USART_SynchronousMode：同步模式，Master/Slave 模式收发例程
   |      |      |      |      |-- USART_Idle_Recv：串口使用DMA进行不定长接收例程
+  |      |      |      |      |-- USART_DMA_EXT: USART 通过DMA收发例程
   |      |      |      |-- USB
   |      |      |      |      |-- USBHS 
   |      |      |      |      |      |-- DEVICE

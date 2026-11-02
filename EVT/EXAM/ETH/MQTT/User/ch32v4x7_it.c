@@ -16,8 +16,8 @@ void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void ETH_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-u8 publishValid = 0;
-u16 timeCnt = 0;
+volatile u8 publishValid = 0;
+volatile u16 timeCnt = 0;
 /*********************************************************************
  * @fn      NMI_Handler
  *
@@ -70,7 +70,7 @@ void TIM2_IRQHandler(void)
 {
     if(!publishValid){            //Set the publishValid flag every 20s
         timeCnt += 10;
-        if(timeCnt > 20000){
+        if(timeCnt >= 20000){
             publishValid = 1;
             timeCnt = 0;
         }

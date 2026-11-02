@@ -113,7 +113,7 @@ uint8_t IAP_Flash_Read(uint32_t address, uint8_t* buff, uint32_t length)
     }
 
     /* Verify Address, No flash operation if the address is out of range */
-    if(((read_addr >= DEF_APP_CODE_START_ADDR) && (read_addr <= DEF_APP_CODE_END_ADDR)) || ((read_addr >= DEF_VERIFY_CODE_START_ADDR) && (read_addr <= DEF_VERIFY_CODE_END_ADDR)))
+    if(((read_addr >= DEF_APP_CODE_START_ADDR) && ((read_addr + read_len) <= DEF_APP_CODE_END_ADDR)) || ((read_addr >= DEF_VERIFY_CODE_START_ADDR) && ((read_addr + read_len) <= DEF_VERIFY_CODE_END_ADDR)))
     {
         /* Available Data */
         for(i = 0; i < read_len; i++)
@@ -172,7 +172,7 @@ uint8_t mFLASH_ProgramPage_Fast(uint32_t addr, uint32_t* buffer)
  */
 uint8_t IAP_Flash_Write(uint32_t address, uint8_t* buff, uint32_t length)
 {
-    uint8_t temp_buf[DEF_FLASH_PAGE_SIZE];
+    static uint8_t temp_buf[DEF_FLASH_PAGE_SIZE];
     uint32_t full_page_len,last_page_len,last_page_address;
     uint8_t s;
     /* Verify Keys, No flash operation if keys are not correct */
@@ -196,7 +196,11 @@ uint8_t IAP_Flash_Write(uint32_t address, uint8_t* buff, uint32_t length)
         if(last_page_len)
         {
             last_page_address = address + full_page_len;
-            IAP_Flash_Read(last_page_address, temp_buf, DEF_FLASH_PAGE_SIZE);
+            s = IAP_Flash_Read(last_page_address, temp_buf, DEF_FLASH_PAGE_SIZE);
+            if(s != 0)
+            {
+                return s;
+            }
             memcpy(temp_buf, buff + full_page_len, last_page_len);
             s = FLASH_ROM_WRITE(last_page_address, (uint32_t *)temp_buf, DEF_FLASH_PAGE_SIZE);
             if(s != FLASH_COMPLETE)
@@ -273,7 +277,7 @@ uint32_t IAP_Flash_Verify(uint32_t address, uint8_t* buff, uint32_t length)
     }
 
     /* Verify Address, No flash operation if the address is out of range */
-    if(((read_addr >= DEF_APP_CODE_START_ADDR) && (read_addr <= DEF_APP_CODE_END_ADDR)) || ((read_addr >= DEF_VERIFY_CODE_START_ADDR) && (read_addr <= DEF_VERIFY_CODE_END_ADDR)))
+    if(((read_addr >= DEF_APP_CODE_START_ADDR) && ((read_addr + read_len) <= DEF_APP_CODE_END_ADDR)) || ((read_addr >= DEF_VERIFY_CODE_START_ADDR) && ((read_addr + read_len) <= DEF_VERIFY_CODE_END_ADDR)))
     {
         for(i = 0; i < read_len; i++)
         {
@@ -284,6 +288,10 @@ uint32_t IAP_Flash_Verify(uint32_t address, uint8_t* buff, uint32_t length)
             }
             read_addr ++;
         }
+    }
+    else
+    {
+        return 0xFE;
     }
 
     return 0;
@@ -446,9 +454,9 @@ void IAP_Jump_APP(void)
     /* .... */
     /* Jump Code */
 #if DEF_CORE_TYPE == DEF_CORE_CM3
-    jump2app = (iapfun) * (vu32*)(DEF_APP_CODE_START_ADDR + 4);     //用户代码区第二个字为程序开始地址(复位地址)
-    MSR_MSP(*(vu32*)DEF_APP_CODE_START_ADDR);                   //初始化用户代码区堆栈指针(用户代码区的第一个字用于存放栈顶地址)
-    jump2app();                                              //跳转到APP.
+    jump2app = (iapfun) * (vu32*)(DEF_APP_CODE_START_ADDR + 4);     //The second word of the user code area is the program start address (reset address)
+    MSR_MSP(*(vu32*)DEF_APP_CODE_START_ADDR);                   //Initialize the stack pointer of the user code area (the first word of the user code area holds the top-of-stack address)
+    jump2app();                                              //Jump to the APP.
 #elif DEF_CORE_TYPE == DEF_CORE_RV
     /* Code for Jump, Enable Chip soft reset interrupt, jump to application code in soft reset interrupt */
     Delay_Ms(500);
@@ -466,7 +474,7 @@ void IAP_Jump_APP(void)
  *
  * @return  none
  */
-void mStopIfError( uint8_t iError )
+void mStopIfError( uint32_t iError )
 {
     if ( iError == ERR_SUCCESS )
     {
@@ -703,7 +711,7 @@ uint8_t USBH_GetConfigDescr( uint8_t usb_port, uint16_t *pcfg_len )
 }
 
 /*********************************************************************
- * @fn      USBHSH_SetUsbConfig
+ * @fn      USBH_SetUsbConfig
  *
  * @brief   Set USB configuration.
  *
@@ -931,7 +939,8 @@ uint8_t IAP_USBH_PreDeal( void )
 void IAP_Main_Deal( void )
 {
     uint32_t totalcount, t;
-    uint16_t i, ret;
+    uint16_t i;
+    uint32_t ret;
     uint8_t  *pCodeStr;
     static   uint8_t   op_flag = 0;
 
@@ -1068,6 +1077,7 @@ void IAP_Main_Deal( void )
                 {
                     /* IAP Verify code error, stay in IAP */
                     DUG_PRINTF( "Verify-Code ERR %02x\r\n", ret );
+                    return;
                 }
                 DUG_PRINTF( "\r\nIAP End.\r\n" );
                 /* Jump User Application */

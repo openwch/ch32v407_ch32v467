@@ -178,7 +178,7 @@ usb_rst_e ethernet_receive(void *buf, size_t *size)
             (pDMARxSet->Status & ETH_DMARxDesc_LS) && \
             (pDMARxSet->Status & ETH_DMARxDesc_FS))
         {
-            /* Get the Frame Length of the received packet: substruct 4 bytes of the CRC */
+            /* Get the Frame Length of the received packet: subtract 4 bytes of the CRC */
             size_t length = ((pDMARxSet->Status & ETH_DMARxDesc_FL) >> 16) - 4;
 
             memcpy(buf, (void *)pDMARxSet->Buffer1Addr, length);

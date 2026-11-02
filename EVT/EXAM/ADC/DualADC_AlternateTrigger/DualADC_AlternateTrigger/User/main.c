@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/12/01
+* Version            : V1.0.1
+* Date               : 2026/10/16
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -20,7 +20,7 @@
 
 #include "debug.h"
 
-u16 ADC_val[2];
+vu16 ADC_val[2];
 
 /*********************************************************************
  * @fn      ADC_Function_Init
@@ -84,9 +84,9 @@ void ADC_Function_Init(void)
 
 
 /*********************************************************************
- * @fn      TIM2_PWM_In
+ * @fn      TIM2_PWM_Init
  *
- * @brief   TIM2,PWM input mode init(Only CH1 and CH2 channels can be used)
+ * @brief   TIM2,PWM input mode init
  *
  * @param   arr - Auto reload values
  *          psc - Prescaler value
@@ -94,7 +94,7 @@ void ADC_Function_Init(void)
  *
  * @return  none
  */
-void TIM2_PWM_In(u16 arr, u16 psc, u16 ccp)
+void TIM2_PWM_Init( u16 arr, u16 psc, u16 ccp )
 {
 
     TIM_OCInitTypeDef       TIM_OCInitStructure = {0};
@@ -139,7 +139,7 @@ int main(void)
     printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
 
     ADC_Function_Init();
-    TIM2_PWM_In(600, 48000 - 1, 300);
+    TIM2_PWM_Init( 600, 48000 - 1, 300 );
 
     while(1)
     {

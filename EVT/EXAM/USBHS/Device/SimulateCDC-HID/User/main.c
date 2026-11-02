@@ -12,10 +12,10 @@
 
 /*
   @Note
-  (1),Example routine to emulate a simulate USB-CDC Device, USE USART2(PA2/PA3),
-  Please note: This code uses the default serial port 1 for debugging,
+  1.Example routine to emulate a simulate USB-CDC Device, USE USART2(PA2/PA3),
+  Please note: This code uses the default serial port 2 for debugging,
   if you need to modify the debugging serial port, please do not use USART2
-  (2),Merged HID devices, using endpoint 4 data downlink to fetch reverse upload;
+  2.Merged HID devices, using endpoint 4 data downlink to fetch reverse upload;
 
   If the USB is set to high-speed, an external crystal oscillator is recommended for the clock source.
 */

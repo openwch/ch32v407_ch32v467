@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
 * File Name          : ch32v4x7.h
 * Author             : WCH
-* Version            : V1.0.3
-* Date               : 2026/08/25
+* Version            : V1.0.5
+* Date               : 2026/10/18
 * Description        : CH32V4x7 Device Peripheral Access Layer Header File.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -31,7 +31,7 @@
 
 /* CH32V4x7 Standard Peripheral Library version number */
 #define __CH32V4x7_STDPERIPH_VERSION_MAIN   (0x01) /* [15:8] main version */
-#define __CH32V4x7_STDPERIPH_VERSION_SUB    (0x04) /* [7:0] sub version */
+#define __CH32V4x7_STDPERIPH_VERSION_SUB    (0x05) /* [7:0] sub version */
 #define __CH32V4x7_STDPERIPH_VERSION        ( (__CH32V4x7_STDPERIPH_VERSION_MAIN << 8)\
                                              |(__CH32V4x7_STDPERIPH_VERSION_SUB << 0))
 
@@ -3586,7 +3586,7 @@ typedef struct
 #define  DMA_MADDR8_MA                               ((uint32_t)0xFFFFFFFF)        /* Memory Address */
 
 /******************  Bit definition for DMA_MADDR9 register  *******************/
-#define  DMA_MADDR8_MA                               ((uint32_t)0xFFFFFFFF)        /* Memory Address */
+#define  DMA_MADDR9_MA                               ((uint32_t)0xFFFFFFFF)        /* Memory Address */
 
 /******************  Bit definition for DMA_MADDR10 register  *******************/
 #define  DMA_MADDR10_MA                              ((uint32_t)0xFFFFFFFF)        /* Memory Address */
@@ -4361,7 +4361,7 @@ typedef struct
 #define  AFIO_EXTICR4_EXTI14_PB                      ((uint16_t)0x0100)            /* PB[14] pin */
 #define  AFIO_EXTICR4_EXTI14_PC                      ((uint16_t)0x0200)            /* PC[14] pin */
 #define  AFIO_EXTICR4_EXTI14_PD                      ((uint16_t)0x0300)            /* PD[14] pin */
-#define  AFIO_EXTICR4_EXTI14_PE                      ((uint16_t)0x0400)            /* PE[14] pin *//
+#define  AFIO_EXTICR4_EXTI14_PE                      ((uint16_t)0x0400)            /* PE[14] pin */
 
 #define  AFIO_EXTICR4_EXTI15_PA                      ((uint16_t)0x0000)            /* PA[15] pin */
 #define  AFIO_EXTICR4_EXTI15_PB                      ((uint16_t)0x1000)            /* PB[15] pin */
@@ -4410,8 +4410,8 @@ typedef struct
 
 #define  AFIO_PCFR2_USART7_REMAP_NOREMAP             ((uint32_t)0x00000000)        
 #define  AFIO_PCFR2_USART7_REMAP_PARTIALREMAP1       ((uint32_t)0x00400000)   
-#define  AFIO_PCFR2_USART7_REMAP_PARTIALREMAP2       ((uint32_t)0x00400000)        
-#define  AFIO_PCFR2_USART7_REMAP_FULLREMAP           ((uint32_t)0x00800000)        
+#define  AFIO_PCFR2_USART7_REMAP_PARTIALREMAP2       ((uint32_t)0x00800000)        
+#define  AFIO_PCFR2_USART7_REMAP_FULLREMAP           ((uint32_t)0x00C00000)        
 
 #define  AFIO_PCFR2_USART8_REMAP                     ((uint32_t)0x03000000)        
 #define  AFIO_PCFR2_USART8_REMAP_0                   ((uint32_t)0x01000000)

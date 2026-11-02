@@ -16,7 +16,7 @@
  *  the data sent by the last Set_Report request.Speed of UART2 is 115200bps.
  *
  * Interrupt Transfers:
- *   UART4_RX   ---> Endpoint2
+ *   UART2_RX   ---> Endpoint2
  *   Endpoint1  ---> UART2_TX
  *
  *   Note that the 1(FS) or 2(HS) bytes is the valid data length and the remaining bytes are

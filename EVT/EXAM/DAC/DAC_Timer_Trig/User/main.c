@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/12/01
+* Version            : V1.0.1
+* Date               : 2026/10/18
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -107,9 +107,7 @@ int main(void)
         DAC->R12BDHR1=DAC_Value[i];
         i++;
 
-        if(i>Num){
-          i=0;
-        }
+       i%=Num;
 
         Delay_Ms(1000);
         printf("run\r\n");

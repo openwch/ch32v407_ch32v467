@@ -50,7 +50,7 @@ extern "C" {
 
 /* USB Buffer Size */
 #ifndef USBHS_MAX_PACKET_SIZE
-#define USBHS_MAX_PACKET_SIZE      64    
+#define USBHS_MAX_PACKET_SIZE      512    
 #endif
 
 /*******************************************************************************/

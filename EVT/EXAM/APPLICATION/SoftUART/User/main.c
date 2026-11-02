@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/12/01
+* Version            : V1.0.1
+* Date               : 2026/10/14
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -46,7 +46,7 @@ int main(void)
     SoftUARTFunc.Init(9600);
 	while(1)
 	{
-        if (SoftUARTFunc.ReceiveBytes(tmp, 0xff))
+        if (SoftUARTFunc.ReceiveBytes(tmp, 0xff, sizeof(tmp)))
             SoftUARTFunc.TransmitBytes(tmp, 4);
 	}
 }

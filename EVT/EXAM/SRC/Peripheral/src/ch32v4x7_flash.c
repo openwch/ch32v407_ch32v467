@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
 * File Name          : ch32v4x7_flash.c
 * Author             : WCH
-* Version            : V1.0.1
-* Date               : 2026/08/18
+* Version            : V1.0.2
+* Date               : 2026/10/19
 * Description        : This file provides all the FLASH firmware functions.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -898,7 +898,7 @@ FLASH_Status FLASH_ROM_ERASE(uint32_t StartAddr, uint32_t Length)
         return FLASH_ADR_RANGE_ERROR;
     }
 
-    if((StartAddr + Length) > ValidAddrEnd)
+    if(Length > (ValidAddrEnd - StartAddr))
     {
         return FLASH_OP_RANGE_ERROR;
     }
@@ -971,7 +971,7 @@ FLASH_Status FLASH_ROM_ERASE(uint32_t StartAddr, uint32_t Length)
 
     if(Length1)//back
     {
-        ROM_ERASE(Addr1, (Length1 >> 1), Size_4KB);
+        ROM_ERASE(Addr1, (Length1 >> 12), Size_4KB);
     }
 
     FLASH->CTLR |= CR_FLOCK_Set;
@@ -1005,7 +1005,7 @@ FLASH_Status FLASH_ROM_WRITE(uint32_t StartAddr, uint32_t *pbuf, uint32_t Length
         return FLASH_ADR_RANGE_ERROR;
     }
 
-    if((StartAddr + Length) > ValidAddrEnd)
+    if(Length > (ValidAddrEnd - StartAddr))
     {
         return FLASH_OP_RANGE_ERROR;
     }

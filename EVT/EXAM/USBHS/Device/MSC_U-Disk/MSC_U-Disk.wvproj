@@ -1,5 +1,6 @@
 {
 	"version": "1.0",
+	"hasAllParsed": true,
 	"isNormalMRSProject": true,
 	"basic": {
 		"chipInfo": {
@@ -8,11 +9,14 @@
 			"series": "CH32V4X7",
 			"rtos": "NoneOS",
 			"mcu": "CH32V407RET",
-			"description": "ROM(byte): 256K, SRAM(byte):",
+			"description": "Website: https://www.wch.cn/products/CH32V407.html?\\nROM(byte): 512K, SRAM(byte): 200K, CHIP PINS: 64, GPIO PORTS: 49.\\nThe CH32V407 is an industrial-grade interconnect microcontroller based on the barley RISC-V core. It supports a 200 MHz main frequency with zero wait state operation and the V vector instruction set, and is used for accelerating computations or parallel processing applications. The CH32V407 is equipped with 2 sets of USB 2.0 high-speed PHY transceivers (480 Mbps), an Ethernet MAC controller, and 10/100 Mbps physical layer transceivers; it also includes two ADC units, two DAC units, and OPA amplifiers as analog resources; it provides 2 sets of a total of 24 DMA controllers, SDIO, DVP digital image interface, RNG, ARGB, LTDC, FSMC, multiple timers, 10 USART serial ports, I2C interface, I3C interface, 3 SPI interfaces, 2 I2S interfaces, and CAN interfaces, offering a rich set of peripheral resources.The CH32V467, based on the CH32V407, adds 4M or 8M bytes of on-chip expanded PSRAM memory and supports DMA.",
+			"tempratureScope": "CH32V407RET6{-40℃~85℃}",
+			"artifactType": "executable",
 			"link": "WCH-Link",
-			"peripheral_version": "===1.0",
+			"peripheral_version": "1.0",
 			"calibrateSupport": false,
-			"calibrateCommand": ""
+			"UIConfigSupport": false,
+			"externalFlashSupport": false
 		},
 		"linkedFolders": [
 			{
@@ -43,7 +47,7 @@
 				"name": "*.wvproj"
 			}
 		],
-		"projectName": "CH372Device",
+		"projectName": "MSC_U-Disk",
 		"architecture": "RISC-V",
 		"projectType": "c"
 	},
@@ -62,9 +66,7 @@
 				"pre_script_description": "",
 				"post_script": "",
 				"post_script_description": "",
-				"excludeResources": [
-					""
-				],
+				"excludeResources": [],
 				"optimization": {
 					"level": "size",
 					"message_length": true,
@@ -83,6 +85,7 @@
 					"code_generation_without_hardware_floating": false,
 					"use_pipelines": false,
 					"show_caret_indicating_the_column": false,
+					"calling_convention_variant": false,
 					"other_optimization_flags": ""
 				},
 				"warnings": {
@@ -107,7 +110,7 @@
 				},
 				"debugging": {
 					"debug_level": "default",
-					"debug_format": "default",
+					"debug_format": "dwarf4",
 					"generate_prof_information": false,
 					"generate_gprof_information": false,
 					"other_debugging_flags": ""
@@ -278,7 +281,8 @@
 					}
 				},
 				"archiver": {
-					"archiver_flags": "-r"
+					"archiver_flags": "-r",
+					"libOutputPrefix": "lib"
 				},
 				"createFlash": {
 					"enabled": true,
@@ -286,6 +290,7 @@
 					"copy_only_section_text": false,
 					"copy_only_section_data": false,
 					"copy_only_sections": [],
+					"create_algorithm_file": false,
 					"other_flags": ""
 				},
 				"createList": {
@@ -309,6 +314,7 @@
 					"show_totals": false,
 					"other_flags": ""
 				},
+				"configVariables": [],
 				"riscvTargetProcessor": {
 					"architecture": "rv32i",
 					"multiply_extension": true,
@@ -318,6 +324,7 @@
 					"extra_compressed_extension": true,
 					"bit_extension": true,
 					"multiplication_subset_of_the_M_extension": false,
+					"vector_cryptography_extensions": "",
 					"integer_ABI": "ilp32",
 					"floating_point_ABI": "none",
 					"tuning": "default",
@@ -327,9 +334,8 @@
 					"save_restore": false,
 					"other_target_flags": ""
 				},
-				"component_toolchain": "${WCH:Toolchain:GCC12}",
-				"name": "obj",
-				"configVariables": []
+				"component_toolchain": "${WCH:Toolchain:GCC15}",
+				"name": "obj"
 			},
 			{
 				"buildArtifact": {
@@ -344,9 +350,7 @@
 				"pre_script_description": "",
 				"post_script": "",
 				"post_script_description": "",
-				"excludeResources": [
-					""
-				],
+				"excludeResources": [],
 				"optimization": {
 					"level": "size",
 					"message_length": true,
@@ -365,6 +369,7 @@
 					"code_generation_without_hardware_floating": false,
 					"use_pipelines": false,
 					"show_caret_indicating_the_column": false,
+					"calling_convention_variant": false,
 					"other_optimization_flags": ""
 				},
 				"warnings": {
@@ -389,7 +394,7 @@
 				},
 				"debugging": {
 					"debug_level": "default",
-					"debug_format": "default",
+					"debug_format": "dwarf4",
 					"generate_prof_information": false,
 					"generate_gprof_information": false,
 					"other_debugging_flags": ""
@@ -560,7 +565,8 @@
 					}
 				},
 				"archiver": {
-					"archiver_flags": "-r"
+					"archiver_flags": "-r",
+					"libOutputPrefix": "lib"
 				},
 				"createFlash": {
 					"enabled": true,
@@ -568,6 +574,7 @@
 					"copy_only_section_text": false,
 					"copy_only_section_data": false,
 					"copy_only_sections": [],
+					"create_algorithm_file": false,
 					"other_flags": ""
 				},
 				"createList": {
@@ -591,6 +598,7 @@
 					"show_totals": false,
 					"other_flags": ""
 				},
+				"configVariables": [],
 				"riscvTargetProcessor": {
 					"architecture": "rv32i",
 					"multiply_extension": true,
@@ -600,6 +608,7 @@
 					"extra_compressed_extension": true,
 					"bit_extension": true,
 					"multiplication_subset_of_the_M_extension": false,
+					"vector_cryptography_extensions": "",
 					"integer_ABI": "ilp32",
 					"floating_point_ABI": "none",
 					"tuning": "default",
@@ -609,16 +618,15 @@
 					"save_restore": false,
 					"other_target_flags": ""
 				},
-				"component_toolchain": "${WCH:Toolchain:GCC12}",
-				"name": "dbg",
-				"configVariables": []
+				"component_toolchain": "${WCH:Toolchain:GCC15}",
+				"name": "dbg"
 			}
 		]
 	},
 	"flashConfig": {
-		"mcutype": "CH32V4X7",
+		"mcutype": "CH32V407",
 		"address": "0x08000000",
-		"target_path": "obj\\CH372Device.hex",
+		"target_path": "obj/MSC_U-Disk.hex",
 		"clkSpeed": "High",
 		"debug_interface_mode": "1-wire serial",
 		"erase": true,
@@ -629,6 +637,8 @@
 		"disablepowerout": false,
 		"clearcodeflash": false,
 		"disablecodeprotect": false,
+		"flashType": "",
+		"asmFile_path": "",
 		"exepath": "",
 		"exearguments": ""
 	},
@@ -642,14 +652,14 @@
 			"configOptions": [
 				"-f \"${WCH:OpenOCD:default}/bin/wch-riscv.cfg\""
 			],
-			"host": "localhost",
+			"host": "127.0.0.1",
 			"port": 3333,
 			"skipDownloadBeforeDebug": false,
 			"enablePageEraser": false,
 			"enableNoZeroWaitingAreaFlash": false
 		},
 		"gdbCfg": {
-			"executable": "${WCH:Toolchain:GCC12}",
+			"executable": "${WCH:Toolchain:GCC15}",
 			"options": [],
 			"commands": [
 				"set mem inaccessible-by-default off",
@@ -690,22 +700,24 @@
 			},
 			"debugInRAM": false
 		},
-		"svdpath": null,
+		"svdpath": "${WCH:SDK:default}/RISC-V/CH32V4X7/NoneOS/CH32V4X7.svd",
 		"output": {
 			"showDebugGDBTrace": true,
 			"saveDebugOutputToFile": false,
 			"showDebugOutputTimestamps": true
 		},
 		"reserve": {
-			"PROGRAM_NAME": "obj/CH372Device.elf",
-			"PROJECT_ATTR": "CH372Device",
+			"PROGRAM_NAME": "obj/MSC_U-Disk.elf",
+			"PROJECT_ATTR": "MSC_U-Disk",
 			"PROJECT_BUILD_CONFIG_AUTO_ATTR": true,
 			"PROJECT_BUILD_CONFIG_ID_ATTR": "",
 			"ATTR_BUILD_BEFORE_LAUNCH_ATTR": 2,
 			"GdbServerAllocateConsole": true,
 			"GdbServerAllocateTelnetConsole": false,
+			"SkipDownloadBeforeDebug": false,
 			"StartGdbCLient": true,
-			"UPDATE_THREADLIST_ON_SUSPEND": false
+			"UPDATE_THREADLIST_ON_SUSPEND": false,
+			"DebugInRam": false
 		}
 	}
 }

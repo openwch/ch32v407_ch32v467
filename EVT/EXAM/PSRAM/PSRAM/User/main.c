@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.1
-* Date               : 2026/08/10
+* Version            : V1.0.2
+* Date               : 2026/10/16
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -50,18 +50,18 @@ void PSRAM_INIT(void)
     PSRAMInit(&PSRAMInitStruct); 
     Delay_Ms(1);
 	//Set the Read Latency and Write Latency
-    SetWrLatency(MR4_Write_300M,Latency_300M);
-    SetRdLatency(MR0_Read_300M,Latency_300M,Read_Variable);    
+    SetWrLatency(MR4_Write_200M,Latency_200M);
+    SetRdLatency(MR0_Read_200M,Latency_200M,Read_Variable);    
 }
 
 /*********************************************************************
  * @fn      PSRAM_300MHz_HSE
  *
- * @brief   Sets PSRAM clock frequency to 300MHz.
+ * @brief   Sets PSRAM clock frequency to 200MHz.
  *
  * @return  none
  */
-static void PSRAM_300MHz_HSE(void)
+static void PSRAM_200MHz_HSE(void)
 {
     __IO uint32_t StartUpCounter = 0, HSEStatus = 0 , FLASH_Temp = 0;
     RCC->CTLR |= (uint32_t)0x00000001;
@@ -101,14 +101,14 @@ static void PSRAM_300MHz_HSE(void)
     if (HSEStatus == (uint32_t)0x01)
     {
       /* HCLK = SYSCLK/2 */
-      RCC->CFGR0 |= (uint32_t)RCC_HPRE_DIV2;
+      RCC->CFGR0 |= (uint32_t)RCC_HPRE_DIV1;
       /* PCLK2 = HCLK */
       RCC->CFGR0 |= (uint32_t)RCC_PPRE2_DIV1;
       /* PCLK1 = HCLK */
       RCC->CFGR0 |= (uint32_t)RCC_PPRE1_DIV1;
 
-      /* PLL configuration: HCLK = (HSE * 12) / 2 = 150 MHz */
-      RCC->CFGR0 |= (uint32_t)(RCC_PLLSRC_HSE | RCC_PLLMULL12);
+      /* PLL configuration: HCLK = (HSE * 8) / 1 = 200 MHz */
+      RCC->CFGR0 |= (uint32_t)(RCC_PLLSRC_HSE | RCC_PLLMULL8);
 
       /* Enable PLL */
       RCC->CTLR |= RCC_PLLON;
@@ -163,7 +163,7 @@ int main(void)
     u32 i=0;
     u32 times=0;
     SystemCoreClockUpdate();
-    PSRAM_300MHz_HSE();
+    PSRAM_200MHz_HSE();
     SystemCoreClockUpdate();
     USART_Printf_Init(115200);	
     Delay_Init();

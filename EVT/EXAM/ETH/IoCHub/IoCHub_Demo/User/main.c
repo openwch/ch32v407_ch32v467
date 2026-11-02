@@ -25,12 +25,11 @@
  * @return  none
  */
 void TIM2_Init (void) {
-    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure =
-        {0};
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure = { 0 };
 
     RCC_PB1PeriphClockCmd (RCC_PB1Periph_TIM2, ENABLE);
 
-    TIM_TimeBaseStructure.TIM_Period = SystemCoreClock / 1000000 - 1;
+    TIM_TimeBaseStructure.TIM_Period = SystemCoreClock / 1000000;
     TIM_TimeBaseStructure.TIM_Prescaler = WCHNETTIMERPERIOD * 100 - 1;
     TIM_TimeBaseStructure.TIM_ClockDivision = 0;
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
@@ -92,7 +91,7 @@ int main(void)
     SystemCoreClockUpdate();
     USART_Printf_Init(115200);                                    //USART initialize
     printf ("IoCHub Demo\r\n");
-    printf ("SystemClk:%d\r\n", SystemCoreClock);
+    printf ("SystemClk:%lu\r\n", (unsigned long)SystemCoreClock);
     TIM2_Init();
     NET_Init();
     IoCHub_Init();

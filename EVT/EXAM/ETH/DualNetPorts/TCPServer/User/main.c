@@ -1,0 +1,378 @@
+/********************************** (C) COPYRIGHT *******************************
+* File Name          : main.c
+* Author             : WCH
+* Version            : V1.0.1
+* Date               : 2026/09/24
+* Description        : Main program body.
+*********************************************************************************
+* Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+* Attention: This software (modified or not) and binary are used for 
+* microcontroller manufactured by Nanjing Qinheng Microelectronics.
+*******************************************************************************/
+/*
+ *@Note
+TCP Server example, demonstrating that TCP Server
+receives data and sends back after connecting to a client.
+For details on the selection of engineering chips,
+please refer to the "CH32V30x Evaluation Board Manual" under the CH32V307EVT\EVT\PUB folder.
+ */
+#include "string.h"
+#include "eth_driver.h"
+#include "CH390.h"
+
+#define KEEPALIVE_ENABLE                1                       //Enable keep alive function
+#define LIMIT_CONN_NUM                  1
+u8 MACAddr[2][6];                                                   //MAC address
+u8 IPAddr[2][4]   = {{192, 168, 1, 10}, {192, 168, 1, 20}};         //IP address
+u8 GWIPAddr[2][4] = {{192, 168, 1, 1}, {192, 168, 1, 1}};           //Gateway IP address
+u8 IPMask[2][4]   = {{255, 255, 255, 0}, {255, 255, 255, 0}};       //subnet mask
+u8 DESIP[2][4]    = {{192, 168, 1, 100}, {192, 168, 1, 100}};       //destination IP address
+
+struct _WCH_IPv6_Addr IPv6Addr1 = {
+        {0xFE800000,0x00000000,0x3a3b26ff,0xfe3e6de1},
+        0
+};
+struct _WCH_IPv6_Addr IPv6Addr2 = {
+        {0xFE800000,0x00000000,0x3a3b26ff,0xfe3e6de2},
+        0
+};
+
+struct _WCH_IPv6_Addr IPv6Addr3 = {
+        {0xFE800000,0x00000000,0x3a3b26ff,0xfe3e6de3},
+        0
+};
+struct _WCH_IPv6_Addr IPv6Addr4 = {
+        {0xFE800000,0x00000000,0x3a3b26ff,0xfe3e6de4},
+        0
+};
+
+u16 srcport = 1000;                                     //source port,Each time it is used, it will increment by one
+u8 SocketIdForListen;                                   //Socket for Listening,Each time it is used, it will increment by one
+u8 MyBuf[RECE_BUF_LEN];
+u8 SocketRecvBuf[WCHNET_MAX_SOCKET_NUM][RECE_BUF_LEN];  //socket receive buffer
+extern pTcpVerifyConnection TCPVerifyConnCallback;
+/*********************************************************************
+ * @fn      mStopIfError
+ *
+ * @brief   check if error.
+ *
+ * @param   iError - error constants.
+ *
+ * @return  none
+ */
+void mStopIfError(u8 iError)
+{
+    if (iError == WCHNET_ERR_SUCCESS)
+        return;
+    printf("Error: %02X\r\n", (u16) iError);
+}
+
+/*********************************************************************
+ * @fn      TCPServerVerifyConn
+ *
+ * @brief   Check if the connection is valid.
+ *
+ * @param   src_ip - Source IP.
+ *          src_port - Source Port
+ *          dest_port - Destination Port
+ * @return  WCHNET_ERR_SUCCESS -- SUCCESS
+ *          WCHNET_RET_ABORT -- ABORT
+ */
+uint8_t TCPServerVerifyConn(uint8_t ip_type, uint32_t *remote_ip, uint16_t src_port, uint16_t dest_port)
+{
+    uint8_t len;
+    printf("ip_type:%x\r\n", ip_type);
+    len = (ip_type == IP_V4)?1:4;
+    printf("IP:\r\n");
+    for(uint8_t i = 0; i < len; i++)
+        printf("%x ", remote_ip[i]);
+    printf("\r\n");
+    printf("src_port:%d, dest_port:%d\r\n", src_port, dest_port);
+    return WCHNET_ERR_SUCCESS;
+}
+
+/*********************************************************************
+ * @fn      TIM2_Init
+ *
+ * @brief   Initializes TIM2.
+ *
+ * @return  none
+ */
+void TIM2_Init(void)
+{
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure = { 0 };
+
+    RCC_PB1PeriphClockCmd(RCC_PB1Periph_TIM2, ENABLE);
+
+    TIM_TimeBaseStructure.TIM_Period = SystemCoreClock / 1000000;
+    TIM_TimeBaseStructure.TIM_Prescaler = WCHNETTIMERPERIOD * 1000 - 1;
+    TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+    TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
+    TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+
+    TIM_Cmd(TIM2, ENABLE);
+    TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+    NVIC_EnableIRQ(TIM2_IRQn);
+}
+
+/*********************************************************************
+ * @fn      WCHNET_CreateTcpSocketListen_IPv4
+ *
+ * @brief   Create TCP Socket for Listening based on IPv4
+ *
+ * @return  none
+ */
+void WCHNET_CreateTcpSocketListen_IPv4(uint8_t NetIfIndex)
+{
+    u8 i;
+    SOCK_INF TmpSocketInf;
+
+    memset((void *) &TmpSocketInf, 0, sizeof(SOCK_INF));
+    TmpSocketInf.SourPort = srcport++;
+    TmpSocketInf.ProtoType = PROTO_TYPE_TCP;
+    TmpSocketInf.IPVersion = IP_V4;
+    TmpSocketInf.netindex = NetIfIndex;
+    TmpSocketInf.TCPServerLimitConnNum = LIMIT_CONN_NUM;
+    i = WCHNET_SocketCreat(&SocketIdForListen, &TmpSocketInf);
+    printf("SocketIdForListen %d\r\n", SocketIdForListen);
+    mStopIfError(i);
+    i = WCHNET_SocketListen(SocketIdForListen);                   //listen for connections
+    mStopIfError(i);
+}
+
+/*********************************************************************
+ * @fn      WCHNET_CreateTcpSocketListen_IPv6
+ *
+ * @brief   Create TCP Socket for Listening based on IPv6
+ *
+ * @return  none
+ */
+void WCHNET_CreateTcpSocketListen_IPv6(uint8_t NetIfIndex, uint8_t AddrIndex)
+{
+    u8 i;
+    SOCK_INF TmpSocketInf;
+
+    memset((void *) &TmpSocketInf, 0, sizeof(SOCK_INF));
+    TmpSocketInf.SourPort = srcport++;
+    TmpSocketInf.ProtoType = PROTO_TYPE_TCP;
+    TmpSocketInf.IPVersion = IP_V6;
+    TmpSocketInf.netindex = NetIfIndex;
+    TmpSocketInf.TCPServerLimitConnNum = LIMIT_CONN_NUM;
+    TmpSocketInf.IPv6SrcAddrIndex = AddrIndex;
+    i = WCHNET_SocketCreat(&SocketIdForListen, &TmpSocketInf);
+    printf("SocketIdForListen %d\r\n", SocketIdForListen);
+    mStopIfError(i);
+    i = WCHNET_SocketListen(SocketIdForListen);                   //listen for connections
+    mStopIfError(i);
+}
+
+/*********************************************************************
+ * @fn      WCHNET_DataLoopback
+ *
+ * @brief   Data loopback function.
+ *
+ * @param   id - socket id.
+ *
+ * @return  none
+ */
+void WCHNET_DataLoopback(u8 id)
+{
+#if 1
+    u8 i;
+    u32 len;
+    u32 endAddr = SocketInf[id].RecvStartPoint + SocketInf[id].RecvBufLen;       //Receive buffer end address
+
+    if ((SocketInf[id].RecvReadPoint + SocketInf[id].RecvRemLen) > endAddr) {    //Calculate the length of the received data
+        len = endAddr - SocketInf[id].RecvReadPoint;
+    }
+    else {
+        len = SocketInf[id].RecvRemLen;
+    }
+    i = WCHNET_SocketSend(id, (u8 *) SocketInf[id].RecvReadPoint, &len);        //send data
+    if (i == WCHNET_ERR_SUCCESS) {
+        WCHNET_SocketRecv(id, NULL, &len);                                      //Clear sent data
+    }
+#else
+    u32 len, totallen;
+    u8 *p = MyBuf, TransCnt = 255;
+
+    len = WCHNET_SocketRecvLen(id, NULL);                                //query length
+    printf("Receive Len = %d\r\n", len);
+    totallen = len;
+    WCHNET_SocketRecv(id, MyBuf, &len);                                  //Read the data of the receive buffer into MyBuf
+    while(1){
+        len = totallen;
+        WCHNET_SocketSend(id, p, &len);                                  //Send the data
+        totallen -= len;                                                 //Subtract the sent length from the total length
+        p += len;                                                        //offset buffer pointer
+        if( !--TransCnt )  break;                                        //Timeout exit
+        if(totallen) continue;                                           //If the data is not sent, continue to send
+        break;                                                           //After sending, exit
+    }
+#endif
+}
+
+/*********************************************************************
+ * @fn      WCHNET_HandleSockInt
+ *
+ * @brief   Socket Interrupt Handle
+ *
+ * @param   socketid - socket id.
+ *          intstat - interrupt status
+ *
+ * @return  none
+ */
+void WCHNET_HandleSockInt(u8 socketid, u8 intstat)
+{
+    if (intstat & SINT_STAT_RECV)                                 //receive data
+    {
+        WCHNET_DataLoopback(socketid);                            //Data loopback
+    }
+    if (intstat & SINT_STAT_CONNECT)                              //connect successfully
+    {
+#if KEEPALIVE_ENABLE
+        WCHNET_SocketSetKeepLive(socketid, ENABLE);
+#endif
+        WCHNET_ModifyRecvBuf(socketid, (u32) SocketRecvBuf[socketid],
+        RECE_BUF_LEN);
+        printf("TCP Connect Success\r\n");
+        printf("socket id: %d\r\n",socketid);
+    }
+    if (intstat & SINT_STAT_DISCONNECT)                           //disconnect
+    {
+        printf("TCP Disconnect\r\n");
+    }
+    if (intstat & SINT_STAT_TIM_OUT)                              //timeout disconnect
+    {
+        printf("TCP Timeout\r\n");
+    }
+}
+
+/*********************************************************************
+ * @fn      WCHNET_HandleGlobalInt
+ *
+ * @brief   Global Interrupt Handle
+ *
+ * @return  none
+ */
+void WCHNET_HandleGlobalInt(void)
+{
+    u8 intstat;
+    u16 i;
+    u8 socketint;
+
+    for(uint8_t netif_indx = 0; netif_indx < NETIF_NUM; netif_indx++)
+    {
+        intstat = WCHNET_GetGlobalInt(netif_indx);                            //get global interrupt flag
+        if (intstat & GINT_STAT_UNREACH)                            //Unreachable interrupt
+        {
+            printf("GINT_STAT_UNREACH\r\n");
+        }
+        if (intstat & GINT_STAT_IP_CONFLI)                          //IP conflict
+        {
+            printf("GINT_STAT_IP_CONFLI\r\n");
+        }
+        if (intstat & GINT_STAT_PHY_CHANGE)                         //PHY status change
+        {
+            i = WCHNET_GetPHYStatus(netif_indx);
+            if (i & PHY_Linked_Status)
+                printf("Net %d PHY Link Success\r\n", netif_indx);
+        }
+        if (intstat & GINT_STAT_SOCKET) {                           //socket related interrupt
+            for (i = 0; i < WCHNET_MAX_SOCKET_NUM; i++) {
+                socketint = WCHNET_GetSocketInt(i);
+                if (socketint)
+                    WCHNET_HandleSockInt(i, socketint);
+            }
+        }
+    }
+}
+
+/*********************************************************************
+ * @fn      main
+ *
+ * @brief   Main program
+ *
+ * @return  none
+ */
+int main(void)
+{
+    u8 i;
+
+    SystemCoreClockUpdate();
+    Delay_Init();
+    USART_Printf_Init(115200);                                    //USART initialize
+    printf("TCPServer Test\r\n");
+    printf("SystemClk:%d\r\n", SystemCoreClock);
+    printf("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
+    printf("net version:%x\n", WCHNET_GetVer());
+    if (WCHNET_LIB_VER != WCHNET_GetVer()) {
+        printf("version error.\n");
+    }
+    WCHNET_GetMacAddr(MACAddr[0]);                                 //get the chip MAC address
+    printf("mac0 addr:");
+    for(i = 0; i < 6; i++)
+        printf("%x ", MACAddr[0][i]);
+    printf("\n");
+
+    CH390TaskInit(MACAddr[1]);
+    printf("mac1 addr:");
+    for(i = 0; i < 6; i++)
+        printf("%x ", MACAddr[1][i]);
+    printf("\n");
+
+    TIM2_Init();
+    i = ETH_LibInit(IPAddr, GWIPAddr, IPMask, MACAddr);         //Ethernet library initialize
+    mStopIfError(i);
+    if (i == WCHNET_ERR_SUCCESS)
+        printf("WCHNET_LibInit Success\r\n");
+	else {
+        printf("WCHNET_LibInit failed, halted\r\n");
+        while(1);
+    }
+        
+    /* support 1 linklocal address and 2 unicast addresses.
+     * When this function is called, the linklocal
+     * address is automatically created,
+     * and the index of the address is 0.*/
+    WCHNET_AddIPV6Addr(&IPv6Addr1,NETIF_INDEX);
+    printf("netif%d ipv6 index %d\r\n", NETIF_INDEX, IPv6Addr1.index);
+    WCHNET_AddIPV6Addr(&IPv6Addr2, NETIF_INDEX);
+    printf("netif%d ipv6 index %d\r\n", NETIF_INDEX, IPv6Addr2.index);
+    WCHNET_AddIPV6Addr(&IPv6Addr3,NETIF1_INDEX);
+    printf("netif%d ipv6 index %d\r\n", NETIF1_INDEX, IPv6Addr3.index);
+    WCHNET_AddIPV6Addr(&IPv6Addr4, NETIF1_INDEX);
+    printf("netif%d ipv6 index %d\r\n", NETIF1_INDEX, IPv6Addr4.index);
+#if KEEPALIVE_ENABLE                                               //Configure keep alive parameters
+    {
+        struct _KEEP_CFG cfg;
+
+        cfg.KLIdle = 20000;
+        cfg.KLIntvl = 15000;
+        cfg.KLCount = 9;
+        WCHNET_ConfigKeepLive(&cfg);
+    }
+#endif
+
+    WCHNET_CreateTcpSocketListen_IPv4(NETIF_INDEX);                   //Create TCP Socket
+    WCHNET_CreateTcpSocketListen_IPv6(NETIF_INDEX, IPv6Addr1.index);
+    WCHNET_CreateTcpSocketListen_IPv6(NETIF_INDEX, IPv6Addr2.index);
+    WCHNET_CreateTcpSocketListen_IPv4(NETIF1_INDEX);                  //Create TCP Socket
+    WCHNET_CreateTcpSocketListen_IPv6(NETIF1_INDEX, IPv6Addr3.index);
+    WCHNET_CreateTcpSocketListen_IPv6(NETIF1_INDEX, IPv6Addr4.index);
+    TCPVerifyConnCallback = TCPServerVerifyConn;    //Register connection verification callback function
+    while(1)
+    {
+        /*Ethernet library main task function,
+         * which needs to be called cyclically*/
+        WCHNET_MainTask();
+        /*Query the Ethernet global interrupt,
+         * if there is an interrupt, call the global interrupt handler*/
+        if(WCHNET_QueryGlobalInt(NETIF_INDEX) | WCHNET_QueryGlobalInt(NETIF1_INDEX) )
+        {
+            WCHNET_HandleGlobalInt();
+        }
+        CH390Task();
+    }
+}

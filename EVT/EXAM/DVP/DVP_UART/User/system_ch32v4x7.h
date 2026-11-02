@@ -28,7 +28,7 @@ extern void SystemCoreClockUpdate(void);
 }
 #endif
 
-#endif /*__CH32V4x7_SYSTEM_H */
+#endif /*__SYSTEM_CH32V4x7_H */
 
 
 

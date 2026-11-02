@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/12/01
+* Version            : V1.0.1
+* Date               : 2026/10/16
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -30,15 +30,9 @@
 void ADC_Function_Init(void)
 {
     ADC_InitTypeDef  ADC_InitStructure = {0};
-    GPIO_InitTypeDef GPIO_InitStructure = {0};
 
-    RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOA, ENABLE);
-    RCC_PB2PeriphClockCmd(RCC_PB2Periph_ADC1, ENABLE);
-    RCC_ADCCLKConfig(RCC_PCLK2_Div8);
-
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    RCC_PB2PeriphClockCmd(RCC_PB2Periph_ADC1, ENABLE );
+	RCC_ADCCLKConfig(RCC_PCLK2_Div8);
 
     ADC_DeInit(ADC1);
     ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
@@ -164,8 +158,6 @@ int main(void)
 
     ADC_Function_Init();
 
-    ADC_Function_Init();
-
     while(1)
     {
         ADC_val = Get_ADC_Average(ADC_Channel_TempSensor, 10);
@@ -175,7 +167,7 @@ int main(void)
 
         val_mv = (ADC_val * 3300 / 4096);
 
-        printf("mv-T-%d,%0d\n", val_mv, TempSensor_Volt_To_Temper(val_mv));
+        printf( "mv-T-%d,%d\n", val_mv, TempSensor_Volt_To_Temper( val_mv ) );
 
         Delay_Ms(2);
     }

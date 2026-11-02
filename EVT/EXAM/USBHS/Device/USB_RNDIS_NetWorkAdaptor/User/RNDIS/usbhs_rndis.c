@@ -87,18 +87,18 @@ volatile uint16_t USBHS_UsbRxLen;
 static uint32_t USBHS_UsbTxAddr;
 
 /* Ring Buffer */
-__attribute__((__aligned__(4))) RING_BUFF_COMM U2E_Trance_Manage;/* usb to eth 缓冲区管理 */
-__attribute__((__aligned__(4))) uint32_t U2E_PackAdr[DEF_U2E_MAXBLOCKS];/* usb to eth 包地址记录 */
-__attribute__((__aligned__(4))) uint32_t U2E_PackLen[DEF_U2E_MAXBLOCKS];/* usb to eth 包长度记录 */
+__attribute__((__aligned__(4))) RING_BUFF_COMM U2E_Trance_Manage;/* usb to eth Buffer management */
+__attribute__((__aligned__(4))) uint32_t U2E_PackAdr[DEF_U2E_MAXBLOCKS];/* usb to eth Packet address record */
+__attribute__((__aligned__(4))) uint32_t U2E_PackLen[DEF_U2E_MAXBLOCKS];/* usb to eth Packet length record */
 
-__attribute__((__aligned__(4))) RING_BUFF_COMM E2U_Trance_Manage;/* eth to usb 缓冲区管理 */
-__attribute__((__aligned__(4))) uint32_t E2U_PackAdr[DEF_E2U_MAXBLOCKS];/* eth to usb 包地址记录 */
-__attribute__((__aligned__(4))) uint32_t E2U_PackLen[DEF_E2U_MAXBLOCKS];/* eth to usb 包长度记录 */
+__attribute__((__aligned__(4))) RING_BUFF_COMM E2U_Trance_Manage;/* eth to usb Buffer management */
+__attribute__((__aligned__(4))) uint32_t E2U_PackAdr[DEF_E2U_MAXBLOCKS];/* eth to usb Packet address record */
+__attribute__((__aligned__(4))) uint32_t E2U_PackLen[DEF_E2U_MAXBLOCKS];/* eth to usb Packet length record */
 
 __attribute__ ((aligned(4))) uint8_t USB_TxBuff[ DEF_ETH_TX_USBPACK ] = { 0 };
 __attribute__ ((aligned(4))) uint8_t USB_RxBuff[ DEF_ETH_RX_USBPACK ] = { 0 };
 
-__attribute__((__aligned__(4))) ETH_DMADESCTypeDef *DMARxDealTabs[ETH_RXBUFNB];/* MAC recv descriptor, 4-byte aligned， eth to usb 接收描述符包状态归属 */
+__attribute__((__aligned__(4))) ETH_DMADESCTypeDef *DMARxDealTabs[ETH_RXBUFNB];/* MAC recv descriptor, 4-byte aligned, eth to usb Ownership of the receive descriptor packet status */
 
 /* Phy Status */
 volatile uint8_t  ETH_LastStatus = 0;
@@ -258,7 +258,7 @@ static void _rndis_handle_set_msg( void )
 /*********************************************************************
  * @fn      MAC_Filter_Set
  *
- * @brief   Change MacFliter by USB Request
+ * @brief   Change MacFilter by USB Request
  *
  * @return  none
  */
@@ -547,7 +547,7 @@ uint8_t ETH2USB_DataSend(uint16_t len, uint32_t *pBuff )
 /*********************************************************************
  * @fn      USB2ETH_Trance
  *
- * @brief   usb to eth trance
+ * @brief   usb to eth transfer
  *
  * @return  none
  */
@@ -666,7 +666,7 @@ void ETH2USB_DataRecv( void )
 /*********************************************************************
  * @fn      ETH2USB_Trance
  *
- * @brief   eth to usb trance
+ * @brief   eth to usb transfer
  *
  * @return  none
  */
@@ -806,7 +806,7 @@ void ETH_DriverInit( uint8_t *addr )
     /* Used for Time Base */
     Timer_Init( );
     ETH_Init( addr );
-    /* Enable flowConlrol */
+    /* Enable flowControl */
     /* PT = 240(10 full eth pack); PLT = 01(28*PT) */
     ETH->MACFCR = 0;
     ETH->MACFCR |= (0xF0<<16);/* 240(64bits time) 10 full eth pack time */

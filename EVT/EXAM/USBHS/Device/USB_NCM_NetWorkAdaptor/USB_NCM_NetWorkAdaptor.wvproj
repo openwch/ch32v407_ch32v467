@@ -1,5 +1,6 @@
 {
 	"version": "1.0",
+	"hasAllParsed": true,
 	"isNormalMRSProject": true,
 	"basic": {
 		"chipInfo": {
@@ -13,6 +14,8 @@
 			"artifactType": "executable",
 			"link": "WCH-Link",
 			"peripheral_version": "1.4",
+			"externalFlashSupport": false,
+			"UIConfigSupport": false,
 			"calibrateSupport": false,
 			"calibrateCommand": ""
 		},
@@ -108,7 +111,7 @@
 				},
 				"debugging": {
 					"debug_level": "default",
-					"debug_format": "default",
+					"debug_format": "dwarf4",
 					"generate_prof_information": false,
 					"generate_gprof_information": false,
 					"other_debugging_flags": ""
@@ -295,6 +298,7 @@
 					"copy_only_section_text": false,
 					"copy_only_section_data": false,
 					"copy_only_sections": [],
+					"create_algorithm_file": false,
 					"other_flags": ""
 				},
 				"createList": {
@@ -357,6 +361,8 @@
 		"disablepowerout": false,
 		"clearcodeflash": false,
 		"disablecodeprotect": false,
+		"flashType": "",
+		"asmFile_path": "",
 		"exepath": "",
 		"exearguments": ""
 	},
@@ -370,7 +376,7 @@
 			"configOptions": [
 				"-f \"${WCH:OpenOCD:default}/bin/wch-riscv.cfg\""
 			],
-			"host": "localhost",
+			"host": "127.0.0.1",
 			"port": 3333,
 			"skipDownloadBeforeDebug": false,
 			"enablePageEraser": false,

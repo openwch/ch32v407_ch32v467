@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2024/06/06
+* Version            : V1.0.2
+* Date               : 2026/10/16
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -69,7 +69,7 @@ void UART2_Send_Byte(u8 t)
 }
 
 /*********************************************************************
- * @fn      DVP_Init
+ * @fn      DVP_Function_Init
  *
  * @brief   Init DVP
  *
@@ -182,7 +182,7 @@ int main(void)
 	SystemCoreClockUpdate();
 	Delay_Init();
 	USART_Printf_Init(921600);	
-	printf("SystemClk:%d\r\n",SystemCoreClock);
+	printf("SystemClk:%u\r\n",SystemCoreClock);
 	printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
 
   while(OV2640_Init())

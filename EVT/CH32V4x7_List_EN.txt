@@ -1,5 +1,5 @@
 
-Nanjing Qinheng Microelectronics Co., Ltd. 2026.08
+Nanjing Qinheng Microelectronics Co., Ltd. 2026.10
 
 https://wch-ic.com
 
@@ -39,11 +39,17 @@ Directory
   |      |      |      |      |-- LTDC_LVGL: use LTDC driver to display some animations on the LCD
   |      |      |      |      |-- RunInPSRAM: Coremark demo run in PSRAM
   |      |      |      |      |-- AIoCHub: AIoCHub cloud platform application
+  |      |      |      |      |-- JPEG_decode_LTDC: LTDC static display decoded JPEG
+  |      |      |      |      |-- CherryUSB: CherryUSB repository address and introduction
+  |      |      |      |      |-- EEPROM_Emulation: The routine demonstrates flash simulation of EEPROM
+  |      |      |      |      |-- FATFS: 
+  |      |      |      |      |      |-- FATFS_SPI_FLASH: This example demonstrates SPI operation Winbond W25Qxx SPIFLASH with FATFS
+  |      |      |      |      |      |-- FATFS_SDIO_SD: This example demonstrates reading and writing all sectors of the SD card through the SDIO interface with FATFS
   |      |      |      |-- ARGB
   |      |      |      |      |-- Gradient: ARGB routine
   |      |      |      |      |-- PollingFilling: Poll and interrupt mode drive ARGB
   |      |      |      |-- BKP
-  |      |      |      |      |-- BKP：BKP routine 
+  |      |      |      |      |-- BKP: BKP routine 
   |      |      |      |-- CAN
   |      |      |      |      |-- Networking: CAN routine: normal mode, standard frame and expanded frame data transceiver
   |      |      |      |      |-- TestMode: test mode, including silent mode, loopback mode and loopback silent mode
@@ -56,10 +62,10 @@ Directory
   |      |      |      |      |      |-- HarmonyOS: HarmonyOS migration routine
   |      |      |      |      |      |-- rt-thread: RT-Thread migration routine
   |      |      |      |      |      |-- TencentOS: TencentOS migration routine
-  |      |      |      |      |-- PMP：Physical memory protection routine
-  |      |      |      |      |-- SYSTICK_Interrupt：Systick timer routine
+  |      |      |      |      |-- PMP: Physical memory protection routine
+  |      |      |      |      |-- SYSTICK_Interrupt: Systick timer routine
   |      |      |      |-- CRC
-  |      |      |      |      |-- CRC_Calculation：CRC routine
+  |      |      |      |      |-- CRC_Calculation: CRC routine
   |      |      |      |-- DAC 
   |      |      |      |      |-- DAC_DMA: DAC DMA conversion routines
   |      |      |      |      |-- DAC_Exit_9_Trig: external trigger DAC conversion routine
@@ -75,13 +81,15 @@ Directory
   |      |      |      |      |-- DVP_TFTLCD: DVP routine to operate OV2640 camera video mode to display image on LCD
   |      |      |      |      |-- DVP_UART: DVP routine to operate OV2640 camera JPEG mode
   |      |      |      |-- ETH
+  |      |      |      |      |-- 1_Tool_Doc:ETH routine related documents and tools 
   |      |      |      |      |-- DHCP: DHCP demonstration routine to obtain IP automatically
   |      |      |      |      |-- DNS: DHCP demonstration routine to obtain IP automatically and then request domain name resolution 
+  |      |      |      |      |-- DualNetPorts: Dual Ethernet Port Example
   |      |      |      |      |-- ETH_CFG: ETH_CFG routine. Create a UDP Server to communicate with upper computer, to configure WCHNET functions, including configuring various parameters and creating a new communication. 
   |      |      |      |      |-- ETH_IAP: ETH IAP routine
   |      |      |      |      |-- ETH_UART: ETH_UART routine, to demonstrate data transparent transfer between Ethernet and UART 
   |      |      |      |      |-- IPRaw_PING: IP_RAW routine, to demonstrate that the TCP client receives data after connecting to the server and then sends it back
-  |      |      |      |      |-- MAC_RAW：Demo of ETH MAC layer data transmission and reception
+  |      |      |      |      |-- MAC_RAW: Demo of ETH MAC layer data transmission and reception
   |      |      |      |      |-- MQTT: MQTT routine, to demonstrate MQTT protocol communication based on TCP/IP   
   |      |      |      |      |-- NetLib: Network protocol stack library file
   |      |      |      |      |-- TcpClient: demonstration routine that TCP client receives data after connecting to the server and then returns data 
@@ -110,12 +118,12 @@ Directory
   |      |      |      |      |-- I2C_DMA: I2C DMA, master/slave mode transceiver routine
   |      |      |      |      |-- I2C_EEPROM: I2C interface routine to operate EEPROM peripheral 
   |      |      |      |      |-- I2C_PEC: PEC error check, master/slave mode transceiver routine
-  |      |      |      |      |-- I2C_7bit_Interrupt_Mode：Use interrupt to receive and send routine 
+  |      |      |      |      |-- I2C_7bit_Interrupt_Mode: Use interrupt to receive and send routine 
   |      |      |      |-- I2S 
   |      |      |      |      |-- HostRx_SlaveTx: I2S master receiver slave transmitter routine
   |      |      |      |      |-- I2S_DMA: I2S master transmitter slave receiver DMA routine
   |      |      |      |-- I3C 
-  |      |      |      |      |-- I3C_DMA_Controller：I3C master routine
+  |      |      |      |      |-- I3C_DMA_Controller: I3C master routine
   |      |      |      |-- IAP: IAP upgrade routine, including the Hex to Bin tool and IAP upgrade tool  
   |      |      |      |      |-- USB+UART: USB+UART IAP routine    
   |      |      |      |-- INT
@@ -123,9 +131,9 @@ Directory
   |      |      |      |-- IWDG
   |      |      |      |      |-- IWDG:Independent Watchdog routine
   |      |      |      |-- LTDC
-  |      |      |      |      |-- LTDC_Display：LTDC display routine 
+  |      |      |      |      |-- LTDC_Display: LTDC display routine 
   |      |      |      |-- OPA
-  |      |      |      |      |-- OPA：OPA output routine
+  |      |      |      |      |-- OPA: OPA output routine
   |      |      |      |-- PSRAM
   |      |      |      |      |-- PSRAM: PSRAM routine
   |      |      |      |-- PWR
@@ -134,22 +142,23 @@ Directory
   |      |      |      |      |-- Stop_Mode: low power, stop mode routine
   |      |      |      |      |-- Standby_RAM_LV_Mode: when LV is enabled in standby mode, RAM 32k low-power data holding routines
   |      |      |      |      |-- Standby_RAM_Mode:when LV is not enabled in standby mode, RAM 32k low-power data holding routines
-  |      |      |      |      |-- Standby_RAM_Application：When MCU in standby mode, RAM 32k low-power data holding application routine
-  |      |      |      |      |-- PVD_Wakeup：STOP mode PVD wakeup MCU Routine
-  |      |      |      |      |-- PVD_VoltageJudger：PVD voltage Judger Routine
+  |      |      |      |      |-- Standby_RAM_Application: When MCU in standby mode, RAM 32k low-power data holding application routine
+  |      |      |      |      |-- PVD_Wakeup: STOP mode PVD wakeup MCU Routine
+  |      |      |      |      |-- PVD_VoltageJudger: PVD voltage Judger Routine
+  |      |      |      |      |-- Stop_Mode_RTC_WakeUp: The example demonstrates the use of the RTC timer to periodically wake up from stop mode
   |      |      |      |-- RCC
   |      |      |      |      |-- Get_CLK:Get system-HCLK-AHB1-AHB2 clock routine  
   |      |      |      |      |-- MCO: MCO pin clock output routine
-  |      |      |      |      |-- HSI_Calibration：HSI calibrate routine
-  |      |      |      |      |-- LSI_Calibration：LSI calibrate routine
+  |      |      |      |      |-- HSI_Calibration: HSI calibrate routine
+  |      |      |      |      |-- LSI_Calibration: LSI calibrate routine
   |      |      |      |-- RNG   
-  |      |      |      |      |-- RNG：：Random number generator routine   
+  |      |      |      |      |-- RNG: Random number generator routine   
   |      |      |      |-- RTC
   |      |      |      |      |-- RTC_Calendar:Calendar Routines  
-  |      |      |      |      |-- RTC_Calibration：RTC calibrate Routines  
+  |      |      |      |      |-- RTC_Calibration: RTC calibrate Routines  
   |      |      |      |-- SDIO
-  |      |      |      |      |-- SDIO_SD：SDIO routine to operate SD card
-  |      |      |      |      |-- SDIO_EMMC：SDIO routine to operate eMMC card
+  |      |      |      |      |-- SDIO_SD: SDIO routine to operate SD card
+  |      |      |      |      |-- SDIO_EMMC: SDIO routine to operate eMMC card
   |      |      |      |-- SPI
   |      |      |      |      |-- 1Lines_half-duplex: single wire half duplex mode, master/slave mode, data transceiver
   |      |      |      |      |-- 2Lines_FullDuplex: two-wire full duplex mode, master/slave mode, data transceiver
@@ -158,10 +167,12 @@ Directory
   |      |      |      |      |-- SPI_DMA: SPI uses DMA, master/slave mode transceiver routine
   |      |      |      |      |-- SPI_FLASH: SPI interface operation flash peripheral routine
   |      |      |      |      |-- SPI_LCD:SPI interface operation FLASH  and LCD peripheral routines
+  |      |      |      |      |-- SPI_DMA_EXT: SPI Master and Slave use DMA full-duplex transmission and reception routine
+  |      |      |      |      |-- SPI_SDCARD: SPI SD card FatFs routine
   |      |      |      |-- SDI_Printf
-  |      |      |      |      |-- SDI_Printf：debug interface SDI, virtual serial port. 
+  |      |      |      |      |-- SDI_Printf: debug interface SDI, virtual serial port. 
   |      |      |      |-- SYSTICK 
-  |      |      |      |      |-- SYSTICK_Interrupt：Systick timer routine    
+  |      |      |      |      |-- SYSTICK_Interrupt: Systick timer routine    
   |      |      |      |-- TIM
   |      |      |      |      |-- Clock_Select: clock source selection routine
   |      |      |      |      |-- ComplementaryOutput_DeadTime: complementary output and deadband insertion mode routines
@@ -175,9 +186,9 @@ Directory
   |      |      |      |      |-- TIM_DMA: timer DMA routines
   |      |      |      |      |-- Encode:Timer encoder mode routines
   |      |      |      |      |-- TIM_INT:Timer interput mode routines
-  |      |      |      |      |-- TIM_Continuous：Timer continuous routines
-  |      |      |      |      |-- PWM_Phase_shifted：Timer PWM Phase shifted routines
-  |      |      |      |      |-- PWM_6_Step：Timer 6_Step PWM routines
+  |      |      |      |      |-- TIM_Continuous: Timer continuous routines
+  |      |      |      |      |-- PWM_Phase_shifted: Timer PWM Phase shifted routines
+  |      |      |      |      |-- PWM_6_Step: Timer 6_Step PWM routines
   |      |      |      |-- USART
   |      |      |      |      |-- USART_DMA: USART DMA, master/slave mode transceiver routine
   |      |      |      |      |-- USART_HalfDuplex: single wire half duplex mode, master/slave mode transceiver routine
@@ -187,7 +198,8 @@ Directory
   |      |      |      |      |-- USART_Polling: polling transceiver mode, master/slave transceiver routine
   |      |      |      |      |-- USART_Printf: USART Print debugging routine
   |      |      |      |      |-- USART_SynchronousMode: synchronous mode, master/slave mode, transceiver routine
-  |      |      |      |      |-- USART_Idle_Recv：USART use DMA receiving indeterminate length data routines
+  |      |      |      |      |-- USART_Idle_Recv: USART use DMA receiving indeterminate length data routines
+  |      |      |      |      |-- USART_DMA_EXT: USART send and receive data through DMA routine
   |      |      |      |-- USB
   |      |      |      |      |-- USBHS 
   |      |      |      |      |      |-- DEVICE
@@ -204,16 +216,16 @@ Directory
   |      |      |      |      |      |-- DEVICE_Host
   |      |      |      |      |      |      |-- Device_Host_DataTrans: USB HS keyboard passthrough and macro demo supporting dual USB Host/Device switching, sleep-wakeup, and key expansion functions
   |      |      |      |      |      |-- Dual_device
-  |      |      |      |      |      |      |-- cdc_transfer：Dual USB port CDC transmission
-  |      |      |      |      |      |      |-- rndis_transfer：Dual USB port RNDIS transmission
+  |      |      |      |      |      |      |-- cdc_transfer: Dual USB port CDC transmission
+  |      |      |      |      |      |      |-- rndis_transfer: Dual USB port RNDIS transmission
   |      |      |      |      |      |-- HOST
   |      |      |      |      |      |      |-- HOST_IAP
   |	     |      |      |      |      |      |      |-- APP: The APP used in conjunction with HOST_SAP has modified the starting position of the program. After compilation, the file needs to be converted to a bin file and renamed as APP.bin
   |      |      |      |      |      |      |      |-- HOST_IAP:  A host U-disk IAP routine organized based on the U-disk read file routine, reads a file named APP.bin from the U-disk, writes it to internal flash, and automatically jumps after verification.
   |      |      |      |      |      |      |-- HOST_KM: Host operation keyboard and mouse, retrieve the endpoint data uploaded by the keyboard and mouse, and print it. Supports level 1 hub under USBFS port
-  |      |      |      |      |      |      |-- MTP_FileSystem：List the process from a USB host to a device that supports MTP and PTP protocols, and read its files
-  |      |      |      |      |      |      |-- Host_Udisk：USB host operation USB drive routine
-  |      |      |      |      |      |      |-- Udisk_Lib：USB file system library files  
+  |      |      |      |      |      |      |-- MTP_FileSystem: List the process from a USB host to a device that supports MTP and PTP protocols, and read its files
+  |      |      |      |      |      |      |-- Host_Udisk: USB host operation USB drive routine
+  |      |      |      |      |      |      |-- Udisk_Lib: USB file system library files  
   |      |      |      |-- WWDG
   |      |      |      |      |-- WWDG:Window Watchdog Routine
 

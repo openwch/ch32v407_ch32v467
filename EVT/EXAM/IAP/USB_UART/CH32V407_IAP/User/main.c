@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.1
-* Date               : 2026/04/03
+* Version            : V1.0.2
+* Date               : 2026/10/15
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -47,7 +47,7 @@ void IAP_2_APP(void)
     Delay_Ms(50);
     GPIO_DeInit(GPIOA);
     GPIO_DeInit( GPIOB);
-    USART_DeInit(USART3);
+    USART_DeInit(USART2);
     RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOA, DISABLE);
     RCC_PB2PeriphClockCmd( RCC_PB2Periph_GPIOB,DISABLE);
     RCC_PB1PeriphClockCmd(RCC_PB1Periph_USART2,DISABLE);
@@ -68,7 +68,7 @@ int main(void)
 	SystemCoreClockUpdate();
 	Delay_Init();
 	USART_Printf_Init(115200);
-	printf("SystemClk:%d\r\n",SystemCoreClock);
+	printf("SystemClk:%u\r\n",SystemCoreClock);
 	printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
 	printf("IAP\r\n");
 
@@ -78,14 +78,18 @@ int main(void)
         if(*(uint32_t*)CalAddr != CheckNum)
         {
             IAP_2_APP();
-            while(1);
+            while(1)
+            {
+            }
         }
     }
 #elif UPGRADE_MODE == UPGRADE_MODE_IO
     if(PA0_Check() == 0)
     {
         IAP_2_APP();
-        while(1);
+        while(1)
+        {
+        }
     }
 #endif
 
@@ -105,7 +109,9 @@ int main(void)
         if (End_Flag)
          {
             IAP_2_APP();
-            while(1);
+            while(1)
+            {
+            }
          }
 #endif
 	}

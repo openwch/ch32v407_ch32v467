@@ -206,7 +206,7 @@ void USBH_AnalyseType( uint8_t *pdev_buf, uint8_t *pcfg_buf, uint8_t *ptype )
 }
 
 /*********************************************************************
- * @fn      USBHSH_SetUsbConfig
+ * @fn      USBH_SetUsbConfig
  *
  * @brief   Set USB configuration.
  *
@@ -393,7 +393,7 @@ uint8_t USBH_GetStrDescr( uint8_t usb_port, uint8_t str_num )
 }
 
 /*********************************************************************
- * @fn      USBH_AnalyzeCfgDesc
+ * @fn      IMAGE_AnalyzeCfgDesc
  *
  * @brief   Generally analyze USB device configuration descriptor.
  *
@@ -482,7 +482,7 @@ void IMAGE_AnalyzeCfgDesc( uint8_t index )
 }
 
 /*********************************************************************
- * @fn      USBH_EnumHidDevice
+ * @fn      USBH_EnumImageDevice
  *
  * @brief   Enumerate HID device.
  *
@@ -609,6 +609,10 @@ uint8_t MTP_SendData( uint8_t usb_port, uint8_t *pbuf, uint32_t len )
     uint8_t  index;
 
     index = RootHubDev[ usb_port ].DeviceIndex;
+    if( HostCtl[ index ].Interface[ 0 ].OutEndpSize[ 0 ] == 0 )
+    {
+        return PTP_FAIL;
+    }
     while( len )
     {
         if( len > HostCtl[ index ].Interface[ 0 ].OutEndpSize[ 0 ] )
@@ -804,6 +808,10 @@ uint8_t USBH_PTP_GetDeviceInfo( uint8_t usb_port )
     flag = 0;
     while( 1 )
     {
+        if( ( PTP_Handle[ usb_port ].data_ptr + PTP_Handle[ usb_port ].data_packet ) > ( pMTP_Data_Buf + DEF_COM_BUF_LEN ) )
+        {
+            return PTP_FAIL;
+        }
         s = MTP_RecvData( usb_port, PTP_Handle[ usb_port ].data_ptr, &len );
         if( s != PTP_OK )
         {
@@ -867,6 +875,10 @@ uint8_t USBH_PTP_GetStorageIds( uint8_t usb_port )
     flag = 0;
     while( 1 )
     {
+        if( ( PTP_Handle[ usb_port ].data_ptr + PTP_Handle[ usb_port ].data_packet ) > ( pMTP_Data_Buf + DEF_COM_BUF_LEN ) )
+        {
+            return PTP_FAIL;
+        }
         s = MTP_RecvData( usb_port, PTP_Handle[ usb_port ].data_ptr, &len );
         if( s != PTP_OK )
         {
@@ -895,7 +907,7 @@ uint8_t USBH_PTP_GetStorageIds( uint8_t usb_port )
     PTP_Handle[ usb_port ].data_ptr += 4;
     printf( "PTP_StorageIDs[ usb_port ].n: %02x\r\n", PTP_StorageIDs[ usb_port ].n );
 
-    for( i = 0; i != PTP_StorageIDs[ usb_port ].n; i++ )
+    for( i = 0; ( i < PTP_StorageIDs[ usb_port ].n ) && ( i < PTP_MAX_STORAGE_UNITS_NBR ); i++ )
     {
         PTP_StorageIDs[ usb_port ].Storage[ i ] = LE32( PTP_Handle[ usb_port ].data_ptr + i * 4 );
     }
@@ -913,12 +925,17 @@ uint8_t USBH_PTP_GetStorageIds( uint8_t usb_port )
  *
  * @return
  */
-void PTP_GetString( uint8_t *str, uint8_t *data, uint32_t *len )
+void PTP_GetString( uint8_t *str, uint8_t *data, uint32_t *len, uint32_t max_len )
 {
     uint32_t i, strlength;
 
     *len = data[ 0 ];
     strlength =  2 * ( *len );
+
+    if( strlength > ( max_len - 1 ) )
+    {
+        strlength = max_len - 1;
+    }
     data++; /* Adjust the offset ignoring the String Len */
 
     for( i = 0; i < strlength; i++ )
@@ -961,6 +978,10 @@ uint8_t USBH_PTP_GetStorageInfo( uint8_t usb_port, uint32_t storage_id )
     flag = 0;
     while( 1 )
     {
+        if( ( PTP_Handle[ usb_port ].data_ptr + PTP_Handle[ usb_port ].data_packet ) > ( pMTP_Data_Buf + DEF_COM_BUF_LEN ) )
+        {
+            return PTP_FAIL;
+        }
         s = MTP_RecvData( usb_port, PTP_Handle[ usb_port ].data_ptr, &len );
         if( s != PTP_OK )
         {
@@ -988,8 +1009,8 @@ uint8_t USBH_PTP_GetStorageInfo( uint8_t usb_port, uint32_t storage_id )
     PTP_StorageInfo[ usb_port ].MaxCapability = LE64( PTP_Handle[ usb_port ].data_ptr + PTP_si_MaxCapability );
     PTP_StorageInfo[ usb_port ].FreeSpaceInBytes = LE64( PTP_Handle[ usb_port ].data_ptr + PTP_si_FreeSpaceInBytes );
     PTP_StorageInfo[ usb_port ].FreeSpaceInImages = LE32( PTP_Handle[ usb_port ].data_ptr + PTP_si_FreeSpaceInImages );
-    PTP_GetString( PTP_StorageInfo[ usb_port ].StorageDescription, (uint8_t *)( &PTP_Handle[ usb_port ].data_ptr + PTP_si_StorageDescription ), &len );
-    PTP_GetString( PTP_StorageInfo[ usb_port ].VolumeLabel, (uint8_t *)( &PTP_Handle[ usb_port ].data_ptr + ( PTP_si_StorageDescription + ( len * 2 ) + 1 ) ), &len );
+    PTP_GetString( PTP_StorageInfo[ usb_port ].StorageDescription, (uint8_t *)( PTP_Handle[ usb_port ].data_ptr + PTP_si_StorageDescription ), &len, sizeof( PTP_StorageInfo[ usb_port ].StorageDescription ) );
+    PTP_GetString( PTP_StorageInfo[ usb_port ].VolumeLabel, (uint8_t *)( PTP_Handle[ usb_port ].data_ptr + ( PTP_si_StorageDescription + ( len * 2 ) + 1 ) ), &len, sizeof( PTP_StorageInfo[ usb_port ].VolumeLabel ) );
 
     /* Status Phase */
     return USBH_PTP_GetResponse( usb_port );
@@ -1092,6 +1113,10 @@ uint8_t USBH_MTP_GetObjectHandles( uint8_t usb_port, uint32_t storage_id, uint32
     flag = 0;
     while( 1 )
     {
+        if( ( PTP_Handle[ usb_port ].data_ptr + PTP_Handle[ usb_port ].data_packet ) > ( pMTP_Data_Buf + DEF_COM_BUF_LEN ) )
+        {
+            return PTP_FAIL;
+        }
         s = MTP_RecvData( usb_port, PTP_Handle[ usb_port ].data_ptr, &len );
         if( s != PTP_OK )
         {
@@ -1103,7 +1128,10 @@ uint8_t USBH_MTP_GetObjectHandles( uint8_t usb_port, uint32_t storage_id, uint32
             temp = LE32( PTP_Handle[ usb_port ].data_ptr );
             flag = 1;
             MTP_Para[ usb_port ].mtp_handle.Handle_total_num = LE32( PTP_Handle[ usb_port ].data_ptr + 12 ); // Total
-            ObjectHandles_Process( usb_port, PTP_Handle[ usb_port ].data_ptr + 16, len - 16 );
+            if( len >= 16 )
+            {
+                ObjectHandles_Process( usb_port, PTP_Handle[ usb_port ].data_ptr + 16, len - 16 );
+            }
         }
         else
         {
@@ -1150,6 +1178,10 @@ uint8_t USBH_MTP_GetObjectInfo( uint8_t usb_port, uint32_t objecthandle )
     flag = 0;
     while( 1 )
     {
+        if( ( PTP_Handle[ usb_port ].data_ptr + PTP_Handle[ usb_port ].data_packet ) > ( pMTP_Data_Buf + DEF_COM_BUF_LEN ) )
+        {
+            return PTP_FAIL;
+        }
         s = MTP_RecvData( usb_port, PTP_Handle[ usb_port ].data_ptr, &len );
         if( s != PTP_OK )
         {
@@ -1172,13 +1204,13 @@ uint8_t USBH_MTP_GetObjectInfo( uint8_t usb_port, uint32_t objecthandle )
             {
                 PTP_Handle[ usb_port ].data_ptr += 4;
             }
-            PTP_GetString( PTP_ObjectInfo[ usb_port ].Filename, PTP_Handle[ usb_port ].data_ptr + PTP_oi_filenamelen, &len );
+            PTP_GetString( PTP_ObjectInfo[ usb_port ].Filename, PTP_Handle[ usb_port ].data_ptr + PTP_oi_filenamelen, &len, sizeof( PTP_ObjectInfo[ usb_port ].Filename ) );
             PTP_ObjectInfo[ usb_port ].FileName_len = len << 1;
-            temp = len + PTP_oi_Filename;
-            PTP_GetString( PTP_ObjectInfo[ usb_port ].Data_Creat_Time, PTP_Handle[ usb_port ].data_ptr + temp, &len );
+            temp = ( len << 1 ) + PTP_oi_Filename;
+            PTP_GetString( PTP_ObjectInfo[ usb_port ].Data_Creat_Time, PTP_Handle[ usb_port ].data_ptr + temp, &len, sizeof( PTP_ObjectInfo[ usb_port ].Data_Creat_Time ) );
             PTP_ObjectInfo[ usb_port ].Data_Creat_len = len << 1;
-            temp += len + 1;
-            PTP_GetString( PTP_ObjectInfo[ usb_port ].Data_Modified_Time, PTP_Handle[ usb_port ].data_ptr + temp, &len );
+            temp += ( len << 1 ) + 1;
+            PTP_GetString( PTP_ObjectInfo[ usb_port ].Data_Modified_Time, PTP_Handle[ usb_port ].data_ptr + temp, &len, sizeof( PTP_ObjectInfo[ usb_port ].Data_Modified_Time ) );
             PTP_ObjectInfo[ usb_port ].Data_Modified_len = len << 1;
             break;
         }
@@ -1244,7 +1276,7 @@ void PTP_GetDevicePropValue( uint8_t usb_port, uint8_t *data, uint32_t *offset, 
             *offset += 16;
             break;
         case PTP_DTC_STR:
-            PTP_GetString( (uint8_t *)(void *)PTP_PropertyValue[ usb_port ].str, (uint8_t *) & ( data[ *offset ] ), &len );
+            PTP_GetString( (uint8_t *)(void *)PTP_PropertyValue[ usb_port ].str, (uint8_t *) & ( data[ *offset ] ), &len, sizeof( PTP_PropertyValue[ usb_port ].str ) );
             *offset += (uint32_t)( len * 2 ) + 1;
             break;
         default:
@@ -1267,6 +1299,11 @@ uint32_t PTP_GetObjectPropList( uint8_t usb_port, uint8_t *data, uint32_t len, u
     uint32_t offset = 0, i;
     uint16_t datatype, propval1;
 
+    if( len < sizeof( uint32_t ) )
+    {
+        return 0;
+    }
+
     prop_count = LE32( data );
     if( prop_count == 0 )
     {
@@ -1277,7 +1314,7 @@ uint32_t PTP_GetObjectPropList( uint8_t usb_port, uint8_t *data, uint32_t len, u
 
     for( i = 0; i < prop_count; i++ )
     {
-        if( len <= 0 )
+        if( len < sizeof( uint32_t ) + sizeof( uint16_t ) + sizeof( uint16_t ) )
         {
           return 0;
         }
@@ -1298,6 +1335,10 @@ uint32_t PTP_GetObjectPropList( uint8_t usb_port, uint8_t *data, uint32_t len, u
 
         PTP_GetDevicePropValue( usb_port, data, &offset, datatype );
 
+        if( offset > len )
+        {
+            return 0;
+        }
         data += offset;
         len -= offset;
         if( propval1 == propval )
@@ -1342,6 +1383,10 @@ uint8_t USBH_MTP_GetObjectSize( uint8_t usb_port, uint32_t objecthandle )
     flag = 0;
     while( 1 )
     {
+        if( ( PTP_Handle[ usb_port ].data_ptr + PTP_Handle[ usb_port ].data_packet ) > ( pMTP_Data_Buf + DEF_COM_BUF_LEN ) )
+        {
+            return PTP_FAIL;
+        }
         s = MTP_RecvData( usb_port, PTP_Handle[ usb_port ].data_ptr, &len );
         if( s != PTP_OK )
         {
@@ -1357,7 +1402,7 @@ uint8_t USBH_MTP_GetObjectSize( uint8_t usb_port, uint32_t objecthandle )
         {
             PTP_Handle[ usb_port ].data_length += len;
             PTP_Handle[ usb_port ].data_ptr = pMTP_Data_Buf + 12;
-            PTP_GetObjectPropList( usb_port, PTP_Handle[ usb_port ].data_ptr, PTP_Handle[ usb_port ].data_length - 12, PTP_OPC_ObjectSize );
+            PTP_GetObjectPropList( usb_port, PTP_Handle[ usb_port ].data_ptr, ( ( PTP_Handle[ usb_port ].data_length > 12 ) ? ( PTP_Handle[ usb_port ].data_length - 12 ) : 0 ), PTP_OPC_ObjectSize );
             PTP_ObjectInfo[ usb_port ].File_Size = PTP_PropertyValue[ usb_port ].u64;
             break;
         }
@@ -1398,6 +1443,10 @@ uint8_t USBH_PTP_GetPartialObject( uint8_t usb_port )
     flag = 0;
     while( 1 )
     {
+        if( ( MTP_Para[ usb_port ].get_data.data_str.pdata + PTP_Handle[ usb_port ].data_packet ) > ( Com_Buf + DEF_COM_BUF_LEN ) )
+        {
+            return PTP_FAIL;
+        }
         s = MTP_RecvData( usb_port, MTP_Para[ usb_port ].get_data.data_str.pdata, &len );
         if( s != PTP_OK )
         {
@@ -1412,7 +1461,7 @@ uint8_t USBH_PTP_GetPartialObject( uint8_t usb_port )
         if( ( len < PTP_Handle[ usb_port ].data_packet) || ( temp == len ) )
         {
             PTP_Handle[ usb_port ].data_length += len;
-            MTP_Para[ usb_port ].get_data.Handle_maxlen = PTP_Handle[ usb_port ].data_length - 12; // Actual file size
+            MTP_Para[ usb_port ].get_data.Handle_maxlen = ( ( PTP_Handle[ usb_port ].data_length > 12 ) ? ( PTP_Handle[ usb_port ].data_length - 12 ) : 0 ); // Actual file size
             break;
         }
         MTP_Para[ usb_port ].get_data.data_str.pdata += len;
@@ -1466,13 +1515,13 @@ void MTP_Init_Process( uint8_t usb_port )
             }
             printf( "\r\n" );
             printf( "obj_info.Data_Creat:" );
-            for( s = 0; s != PTP_ObjectInfo[ usb_port ].FileName_len; s++ )
+            for( s = 0; s != PTP_ObjectInfo[ usb_port ].Data_Creat_len; s++ )
             {
                 printf( "%02x ", PTP_ObjectInfo[ usb_port ].Data_Creat_Time[ s ] );
             }
             printf( "\r\n" );
             printf( "obj_info.Data_Modified:" );
-            for( s = 0; s != PTP_ObjectInfo[ usb_port ].FileName_len; s++ )
+            for( s = 0; s != PTP_ObjectInfo[ usb_port ].Data_Modified_len; s++ )
             {
                 printf( "%02x ", PTP_ObjectInfo[ usb_port ].Data_Modified_Time[ s ] );
             }
@@ -1494,7 +1543,7 @@ void MTP_Init_Process( uint8_t usb_port )
             s = USBH_PTP_GetPartialObject( usb_port );
             printf( "s = %02x\r\n", s );
             printf( "MTP_Para[ %02x ].get_data.Handle_maxlen=%d\r\n", usb_port, MTP_Para[ usb_port ].get_data.Handle_maxlen );
-            if( MTP_Para[ usb_port ].get_data.Handle_maxlen < 8192 )
+            if( ( s != ERR_SUCCESS ) || ( MTP_Para[ usb_port ].get_data.Handle_maxlen < 8192 ) )
             {
                 break;
             }
@@ -1507,7 +1556,7 @@ void MTP_Init_Process( uint8_t usb_port )
  * @fn      USBH_MainDeal
  *
  * @brief   Provide a simple enumeration process for USB devices and
- *          xxxxxxxxxxx.
+ *          related operations.
  *
  * @return  none
  */

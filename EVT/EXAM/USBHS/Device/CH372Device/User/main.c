@@ -17,7 +17,7 @@
   with endpoints 1/3/5 downlinking data and uploading via endpoints 1/4/6 respectively.
   Endpoint 1 uploads and downlinks via ring buffer with no data reversal, while endpoints 
   3/4 and 5/6 copy data and upload it with byte-wise inversion.
-  The device can be operated using Bushund or other upper computer software.
+  The device can be operated using BusHound or other upper computer software.
   Note: This routine needs to be demonstrated in conjunction with the host software.
   If the USB is set to high-speed, an external crystal oscillator is recommended for the clock source.
 */

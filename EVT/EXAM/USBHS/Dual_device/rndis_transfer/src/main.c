@@ -11,19 +11,19 @@
 *******************************************************************************/
 
 /*
- * 功能说明 / Description:
- *   本示例演示了一个双 USB RNDIS 设备数据转发功能。板上两个 USB 控制器
- *   分别枚举为 RNDIS 网卡设备，从一个设备接收到的网络数据包会转发到
- *   另一个设备发送出去，实现两个 USB 网卡之间的数据透传。
+ * Function description / Description:
+ *   This example demonstrates data forwarding between two USB RNDIS devices. The two USB controllers on the board
+ *   enumerate as RNDIS network adapters; network packets received on one device are forwarded to
+ *   be sent out by the other device, so that data passes through between the two USB network adapters.
  *
- * 使用方法 / Usage:
- *   1. 编译并烧录固件到目标板
- *   2. 将目标板的两个 USB 接口分别连接到 PC（或两个不同的 PC）
- *   3. PC 设备管理器中应识别到两个 "RNDIS Transfer Demo" 网卡设备
- *   4. 引脚对应请查看 pin_description.md 文件
- *   5. 配置两个网卡的 IP 地址，即可在两个 PC 之间通过该设备通信
+ * Usage:
+ *   1. Compile and flash the firmware to the target board
+ *   2. Connect the two USB ports of the target board to a PC (or to two different PCs)
+ *   3. PC Two "RNDIS Transfer Demo" network adapters should appear in Device Manager
+ *   4. See the pin_description.md file for the pin mapping
+ *   5. Configure the IP addresses of the two adapters to communicate between two PCs through this device
  *
- * 其他说明 / Notes:
+ * Other notes / Notes:
  *
  */
 
@@ -84,6 +84,7 @@ typedef struct
 {
     usbd_handle_t *h;
     cdcd_rndis_itf_t itf;
+    usb_bool_t link_status;
     manage_t xfer_manage;
     xfer_count_t xfer_count;
     pack_t xfer_packs[BUFFER_COUNT];
@@ -308,15 +309,13 @@ void command_handle(rndis_dev_t *dev)
 
 void status_upload_handle(rndis_dev_t *dev)
 {
-    static usb_bool_t link_status = USB_FALSE;
-
     if (dev->itf.init_status && dev->itf.msg_stage == RNDIS_MSG_STAGE_IDLE)
     {
         usb_bool_t curr_status = usbd_is_enum(rndis_devs[0].h) && usbd_is_enum(rndis_devs[1].h) ? USB_TRUE : USB_FALSE;
 
-        if (curr_status != link_status)
+        if (curr_status != dev->link_status)
         {
-            link_status = curr_status;
+            dev->link_status = curr_status;
 
             dev->itf.msg_stage = RNDIS_MSG_STAGE_NOTIFY;
             rndis_indicate_status_t *resp = (rndis_indicate_status_t *)dev->response_buf;
@@ -639,10 +638,15 @@ usb_rst_e rndis_itf_setup(usbd_handle_t *h, const usb_req_t *req, void **buf, si
 {
     rndis_dev_t *dev = h == rndis_devs[0].h ? &rndis_devs[0] : &rndis_devs[1];
 
+    if (req->bmRequestType_bit.type != USB_REQ_TYPE_CLASS)
+    {
+        return USB_RST_FAILED;
+    }
+
     if (req->bRequest == 0x00)
     {
         *buf = dev->request_buf;
-        *size = USB_MIN(sizeof(dev->response_buf), req->wLength);
+        *size = USB_MIN(sizeof(dev->request_buf), req->wLength);
         return USB_RST_OK;
     }
 

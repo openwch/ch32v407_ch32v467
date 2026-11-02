@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : ch32v4x7_rcc.c
 * Author             : WCH
-* Version            : V1.0.1
-* Date               : 2026/06/26
+* Version            : V1.0.2
+* Date               : 2026/09/21
 * Description        : This file provides all the RCC firmware functions.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -1356,8 +1356,8 @@ void RCC_ADCCLKDutyCycleConfig(uint32_t RCC_DutyCycle)
  */
 void RCC_LTDCCLKConfig(uint32_t RCC_LTDCClockSource)
 {
-    RCC->CFGR3 &= ~RCC_LTDCSRC;
-    RCC->CFGR3 |= (RCC_LTDCClockSource << 6);
+    RCC->CFGR2 &= ~RCC_LTDCSRC;
+    RCC->CFGR2 |= (RCC_LTDCClockSource << 6);
 }
 
 /*********************************************************************
@@ -1372,6 +1372,6 @@ void RCC_LTDCCLKConfig(uint32_t RCC_LTDCClockSource)
  */
 void RCC_LTDCClockSourceDivConfig(uint32_t RCC_LTDCClockSource_Div)
 {
-    RCC->CFGR3 &= ~RCC_LTDCDIV;
-    RCC->CFGR3 |= RCC_LTDCClockSource_Div << 0;
+    RCC->CFGR2 &= ~RCC_LTDCDIV;
+    RCC->CFGR2 |= RCC_LTDCClockSource_Div << 0;
 }
