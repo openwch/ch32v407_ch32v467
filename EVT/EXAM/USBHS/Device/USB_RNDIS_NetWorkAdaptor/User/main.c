@@ -26,7 +26,7 @@
 
 /*What changed: 
  * 1,Update eth-drivers, use the same way as Ethernet Evts.
- * 2,Adjust the writing of other code according to the new stye of eth-drivers;
+ * 2,Adjust the writing of other code according to the new style of eth-drivers;
  * */
 
 #include "usbhs_rndis.h"

@@ -35,7 +35,7 @@
 #define ERR_ERROR         0x01
 #define ERR_End           0x02
 
-#define CalAddr           (0x080F8000-4)
+#define CalAddr           (0x08078000-4)
 #define CheckNum          (0x5aa55aa5)
 
 typedef union __attribute__ ((aligned(4)))_ISP_CMD {

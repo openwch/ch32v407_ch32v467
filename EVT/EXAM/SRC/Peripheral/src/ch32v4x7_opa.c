@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
 * File Name          : ch32v4x7_opa.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/12/01
+* Version            : V1.0.1
+* Date               : 2026/10/18
 * Description        : This file provides all the OPA firmware functions.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -11,7 +11,7 @@
 *******************************************************************************/
 #include "ch32v4x7_opa.h"
 
-#define OPA_MASK         ((uint32_t)0x00FE)
+#define OPA_MASK         ((uint32_t)0x01FE)
 
 
 /*********************************************************************

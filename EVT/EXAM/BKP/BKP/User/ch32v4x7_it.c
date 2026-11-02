@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : ch32v4x7_it.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/12/01
+* Version            : V1.0.1
+* Date               : 2026/10/15
 * Description        : Main Interrupt Service Routines.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -55,8 +55,8 @@ void TAMPER_IRQHandler(void)
 {
   if( BKP_GetITStatus() == SET )
   {
-#if 1
-    printf("TAMPER_IRQHandler\r\n");
+#if 0
+      printf("TAMPER_IRQHandler\r\n");
 	  printf( "BKP_DR1:%08x\r\n", BKP->DATAR1 );
 	  printf( "BKP_DR2:%08x\r\n", BKP->DATAR2 );
 	  printf( "BKP_DR3:%08x\r\n", BKP->DATAR3 );

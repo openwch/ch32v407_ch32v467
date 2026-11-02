@@ -88,7 +88,7 @@ int main(void)
 	SystemCoreClockUpdate();
 	Delay_Init();
 	USART_Printf_Init(115200);
-	printf("SystemClk:%d\r\n",SystemCoreClock);
+	printf("SystemClk:%u\r\n",SystemCoreClock);
 	printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
 	printf("In APP\r\n");
 
@@ -110,7 +110,9 @@ int main(void)
         {
              Delay_Ms(10);
              APP_2_IAP();
-             while(1);
+             while(1)
+             {
+             }
         }
 	}
 }

@@ -264,7 +264,7 @@ void KB_Sleep_Wakeup_Cfg( void )
 {
     EXTI_InitTypeDef EXTI_InitStructure = { 0 };
 
-    /* Enable GPIOB clock */
+    /* Enable AFIO clock */
     RCC_PB2PeriphClockCmd( RCC_PB2Periph_AFIO, ENABLE );
 
     GPIO_EXTILineConfig( GPIO_PortSourceGPIOB, GPIO_PinSource11 );
@@ -353,7 +353,7 @@ void KB_Scan_Handle( void )
                 /* Determine that there is at least one key is pressed or released */
                 if( ( KB_Scan_Result & ( 1 << i ) ) != ( KB_Scan_Last_Result & ( 1 << i ) ) )
                 {
-                    if( ( KB_Scan_Result & ( 1 << i ) ) )           // Key press
+                    if( ( KB_Scan_Result & ( 1 << i ) ) )           // Key release
                     {
                         if( i == 11 )
                         {
@@ -402,12 +402,15 @@ void KB_Scan_Handle( void )
                         }
                         else
                         {
-                            memcpy( &KB_Data_Pack[ j ], &KB_Data_Pack[ j + 1 ], ( 8 - j - 1 ) );
+                            memmove( &KB_Data_Pack[ j ], &KB_Data_Pack[ j + 1 ], ( 8 - j - 1 ) );
                             KB_Data_Pack[ 7 ] = 0;
                         }
-                        key_cnt--;
+                        if( key_cnt )
+                        {
+                            key_cnt--;
+                        }
                     }
-                    else                                            // Key release
+                    else                                            // Key press
                     {
                         if( i == 11 )
                         {
@@ -532,7 +535,7 @@ void MS_Sleep_Wakeup_Cfg( void )
 {
     EXTI_InitTypeDef EXTI_InitStructure = { 0 };
 
-    /* Enable GPIOC clock */
+    /* Enable AFIO clock */
     RCC_PB2PeriphClockCmd( RCC_PB2Periph_AFIO, ENABLE );
 
     GPIO_EXTILineConfig( GPIO_PortSourceGPIOA, GPIO_PinSource4 );
@@ -688,7 +691,7 @@ void MCU_Sleep_Wakeup_Operate( void )
     printf( "Sleep\r\n" );
     __disable_irq( );
     USBHSD->CONTROL &= ~USBHS_UH_PHY_SUSPENDM;
-    EXTI_ClearFlag( EXTI_Line12 | EXTI_Line13 | EXTI_Line14 | EXTI_Line15 );
+    EXTI_ClearFlag( EXTI_Line11 | EXTI_Line12 | EXTI_Line13 | EXTI_Line14 );
     EXTI_ClearFlag( EXTI_Line4 | EXTI_Line5 | EXTI_Line6 | EXTI_Line7 );
 
     PWR_EnterSTOPMode(PWR_Regulator_LowPower,PWR_STOPEntry_WFE);
@@ -699,9 +702,9 @@ void MCU_Sleep_Wakeup_Operate( void )
 
     USBHS_RCC_Init(ENABLE);
 
-    if( EXTI_GetFlagStatus( EXTI_Line12 | EXTI_Line13 | EXTI_Line14 | EXTI_Line15 ) != RESET  )
+    if( EXTI_GetFlagStatus( EXTI_Line11 | EXTI_Line12 | EXTI_Line13 | EXTI_Line14 ) != RESET  )
     {
-        EXTI_ClearFlag( EXTI_Line12 | EXTI_Line13 | EXTI_Line14 | EXTI_Line15 );
+        EXTI_ClearFlag( EXTI_Line11 | EXTI_Line12 | EXTI_Line13 | EXTI_Line14 );
         USBHS_Send_Resume( );
     }
     else if( EXTI_GetFlagStatus( EXTI_Line4 | EXTI_Line5 | EXTI_Line6 | EXTI_Line7 ) != RESET )

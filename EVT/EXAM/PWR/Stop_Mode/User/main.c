@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.1
-* Date               : 2026/03/06
+* Version            : V1.0.2
+* Date               : 2026/10/14
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -114,8 +114,8 @@ int main(void)
     Delay_Init();
     USART_Printf_Init(115200);	
     Delay_Ms(500);
-    printf("SystemClk:%d\r\n", SystemClock);
-    printf("SystemCoreClk:%d\r\n", SystemCoreClock);
+    printf("SystemClk:%u\r\n", SystemClock);
+    printf("SystemCoreClk:%u\r\n", SystemCoreClock);
     printf("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
     RCC_PB1PeriphClockCmd(RCC_PB1Periph_PWR, ENABLE);
     /* If PSRAM is not used,Turn off the VDD18 power supply to reduce the power consumption current */
@@ -166,8 +166,7 @@ void EXTI0_IRQHandler(void)
   if(EXTI_GetITStatus(EXTI_Line0)!=RESET)
   {
     SystemInit();
-    USART_Printf_Init(115200);	
-    printf("EXTI0 Wake up\r\n");
+    USART_Printf_Init(115200);
     EXTI_ClearITPendingBit(EXTI_Line0);     /* Clear Flag */
   }
 }

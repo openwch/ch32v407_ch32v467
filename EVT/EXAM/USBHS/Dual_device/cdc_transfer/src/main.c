@@ -11,19 +11,19 @@
 *******************************************************************************/
 
 /*
- * 功能说明 / Description:
- *   本示例演示了一个双 USB CDC ACM 设备数据转发功能。板上两个 USB 控制器
- *   分别枚举为 CDC ACM 串口设备，从一个串口接收到的数据会转发到另一个串口
- *   发送出去，实现两个 USB 串口之间的数据透传。
+ * Function description / Description:
+ *   This example demonstrates data forwarding between two USB CDC ACM devices. The two USB controllers on the board
+ *   enumerate as CDC ACM serial ports; data received on one port is forwarded to the other port
+ *   and sent out, so that data passes through between the two USB serial ports.
  *
- * 使用方法 / Usage:
- *   1. 编译并烧录固件到目标板
- *   2. 将目标板的两个 USB 接口分别连接到 PC（或两个不同的 PC）
- *   3. PC 设备管理器中应识别到两个 "CDC Transfer Demo" 串口设备
- *   4. 引脚对应请查看 pin_description.md 文件
- *   5. 打开两个串口终端，从一个串口发送的数据将从另一个串口接收
+ * Usage:
+ *   1. Compile and flash the firmware to the target board
+ *   2. Connect the two USB ports of the target board to a PC (or to two different PCs)
+ *   3. PC Two "CDC Transfer Demo" serial ports should appear in Device Manager
+ *   4. See the pin_description.md file for the pin mapping
+ *   5. Open two serial terminals; data sent on one port is received on the other
  *
- * 其他说明 / Notes:
+ * Other notes / Notes:
  *
  */
 

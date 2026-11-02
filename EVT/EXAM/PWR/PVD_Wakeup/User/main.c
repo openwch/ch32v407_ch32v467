@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/12/01
+* Version            : V1.0.1
+* Date               : 2026/10/14
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -28,7 +28,6 @@ void PVD_IRQHandler(void)
     {
         SystemInit();
         USART_Printf_Init(115200);
-        printf("Run at EXTI\r\n");
         EXTI_ClearITPendingBit(EXTI_Line16);
     }
 }
@@ -99,8 +98,8 @@ int main(void)
     Delay_Init();
     USART_Printf_Init(115200);
     Delay_Ms(500);
-    printf("SystemClk:%d\r\n", SystemClock);
-    printf("SystemCoreClk:%d\r\n", SystemCoreClock);
+    printf("SystemClk:%u\r\n", SystemClock);
+    printf("SystemCoreClk:%u\r\n", SystemCoreClock);
     printf("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
     RCC_PB1PeriphClockCmd(RCC_PB1Periph_PWR, ENABLE);
     /* If PSRAM is not used,it is recommended to disable the VDD18 power supply 

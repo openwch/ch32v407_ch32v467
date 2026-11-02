@@ -1,15 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.1
- * Date               : 2026/06/26
+ * Version            : V1.0.2
+ * Date               : 2026/10/14
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
  * Attention: This software (modified or not) and binary are used for 
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
  *******************************************************************************/
-
 /*
  *@Note
  *    when LV is enabled in standby mode, RAM 32K low-power data holding routines:
@@ -19,6 +18,17 @@
  */
 #include "debug.h"
 
+#define RAM_BASE            0x20000000U
+#define RAM32K_BASE         (RAM_BASE)          
+#define RAM32K_SIZE         (32U  * 1024U)
+
+#define RAM32K_TEST_ADDR    (RAM_BASE + 10U * 1024U)      
+#define RAM32K_TEST_WORDS   1024U                          
+
+#define RAM_TEST_PATTERN    0x3333AAAAU
+
+#define RAM_TEST_OK         0U
+#define RAM_TEST_FAIL       1U
 /*********************************************************************
  * @fn      TestDataWrite
  *
@@ -26,24 +36,25 @@
  *
  * @return  none
  */
-void TestDataWrite(void)
+uint32_t TestDataWrite(void)
 {
-    uint32_t myAddr=0x20000000+4*1024;
-
-    uint32_t i=0;
-    for(i=0;i<5120;i++)//Write 32K RAM
+    uint32_t i = 0;
+    uint32_t myAddr = RAM32K_TEST_ADDR;
+    
+    for(i = 0;i < RAM32K_TEST_WORDS; i++)//Write 32KRAM
     {
-        *(uint32_t volatile *)(myAddr+(i<<2)) = 0x5678ABCD;
+        *(uint32_t volatile *)(myAddr + (i<<2)) = RAM_TEST_PATTERN;
     }
-    for(i=0;i<5120;i++)//Check 32K RAM
+    for(i = 0; i < RAM32K_TEST_WORDS; i++)//Check 32KRAM
     {
-        if((*(uint32_t volatile *)(myAddr+(i<<2))) != 0x5678ABCD)
+        if((*(uint32_t volatile *)(myAddr + (i<<2))) != RAM_TEST_PATTERN)
         {
-            printf("Write 32K RAM Error!\r\n");
-            break;
+            printf("32K RAM write error at 0x%08x\r\n", (unsigned)(myAddr + (i << 2)));
+            return RAM_TEST_FAIL;
         }
     }
     printf("Write 32K RAM Successfully!\r\n");
+    return RAM_TEST_OK;
 }
 
 /*********************************************************************
@@ -55,13 +66,13 @@ void TestDataWrite(void)
  */
 void TestDataRead(void)
 {
-    uint32_t myAddr=0x20000000+4*1024;
-    uint32_t i=0;
-   
+    uint32_t i = 0;
+
     printf("32K RAM:\r\n");
-    for(i=0;i<5120;i++)
+    for(i = 0; i < RAM32K_TEST_WORDS; i++)
     {
-        printf("0x%08x=0x%08x\r\n",myAddr+(i<<2),*(uint32_t volatile *)(myAddr+(i<<2)));
+        printf("0x%08x = 0x%08x\r\n", (unsigned)(RAM32K_TEST_ADDR + (i << 2)),
+               (unsigned)*(uint32_t volatile *)(RAM32K_TEST_ADDR + (i << 2)));
     }
 }
 
@@ -101,8 +112,8 @@ int main(void)
     Delay_Init();
     USART_Printf_Init(115200);
     Delay_Ms(500);
-    printf("SystemClk:%d\r\n", SystemClock);
-    printf("SystemCoreClk:%d\r\n", SystemCoreClock);
+    printf("SystemClk:%u\r\n", SystemClock);
+    printf("SystemCoreClk:%u\r\n", SystemCoreClock);
     printf("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
     TestDataRead();
     TestDataWrite();

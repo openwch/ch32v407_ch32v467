@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/12/01
+* Version            : V1.0.1
+* Date               : 2026/10/16
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -19,7 +19,7 @@
  */
 
 #include "debug.h"
-
+vu8  IntResponse=0 ;
 /*********************************************************************
  * @fn      ADC_Function_Init
  *
@@ -127,15 +127,17 @@ int main(void)
     printf("SystemClk:%d\r\n", SystemClock);
     printf("SystemCoreClk:%d\r\n", SystemCoreClock);
     printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
-
-    ADC_Function_Init();
-
     ADC_Function_Init();
 
     while(1)
     {
         ADC_val = Get_ADC_Val(ADC_Channel_1);
         Delay_Ms(500);
+        if(IntResponse == 1)
+        {
+           IntResponse=0;
+           printf( "Enter AnalogWatchdog Interrupt\r\n" );
+        }
         printf("%04d\r\n", ADC_val);
         Delay_Ms(2);
     }
@@ -153,7 +155,7 @@ void ADC1_2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void ADC1_2_IRQHandler(void)
 {
 	if(ADC_GetITStatus( ADC1, ADC_IT_AWD)){   		
-		printf( "Enter AnalogWatchdog Interrupt\r\n" );
+		IntResponse=1;
 	}
 	
 	ADC_ClearITPendingBit( ADC1, ADC_IT_AWD); 

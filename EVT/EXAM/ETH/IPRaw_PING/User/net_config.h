@@ -26,7 +26,7 @@ extern "C" {
 
 #define WCHNET_NUM_TCP                0  /* Number of TCP connections */
 
-#define WCHNET_NUM_TCP_LISTEN         0/* Number of TCP listening */
+#define WCHNET_NUM_TCP_LISTEN         0  /* Number of TCP listening */
 
 /* The number of sockets, the maximum is 31  */
 #define WCHNET_MAX_SOCKET_NUM         (WCHNET_NUM_IPRAW+WCHNET_NUM_UDP+WCHNET_NUM_TCP+WCHNET_NUM_TCP_LISTEN)

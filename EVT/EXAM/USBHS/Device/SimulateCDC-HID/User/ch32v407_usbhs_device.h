@@ -128,10 +128,6 @@ typedef struct __attribute__((packed)) _RING_BUFF_COMM
     volatile uint16_t PackLen[DEF_Ring_Buffer_Max_Blks];
 } RING_BUFF_COMM, *pRING_BUFF_COMM;
 
-/* Ringbuffer variables */
-extern RING_BUFF_COMM  RingBuffer_Comm;
-extern __attribute__ ((aligned(4))) uint8_t  Data_Buffer[ ];
-
 /* SetUp Request Values */
 extern const uint8_t *pUSBHS_Descr;
 

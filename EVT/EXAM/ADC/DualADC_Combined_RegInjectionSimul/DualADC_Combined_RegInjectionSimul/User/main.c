@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/12/01
+* Version            : V1.0.1
+* Date               : 2026/10/16
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -26,8 +26,8 @@
 #include "debug.h"
 
 /* Global Variable */
-u32 TxBuf[1];
-u16 Adc_Val[2];
+vu32 TxBuf[1];
+vu16 Adc_Val[2];
 vu16 ADC_Val1, ADC_Val2;
 vu8  Injected_IT_Flag, DMA_IT_Flag;
 
@@ -89,7 +89,7 @@ void ADC_Function_Init(void)
     ADC_InjectedChannelConfig(ADC2, ADC_Channel_5, 1, ADC_SampleTime_CyclesMode7);
 
     ADC_ExternalTrigInjectedConvConfig(ADC2, ADC_ExternalTrigInjecConv_None);
-    ADC_SoftwareStartConvCmd(ADC2, ENABLE);
+    ADC_ExternalTrigConvCmd( ADC2, ENABLE );
     ADC_ITConfig(ADC2, ADC_IT_JEOC, ENABLE);
 
     ADC_Cmd(ADC2, ENABLE);

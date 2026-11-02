@@ -123,9 +123,15 @@ void WCHNET_MainTask(void)
  */
 void ETH_SetClock(void)
 {
+    uint16_t timeout = 300;
     /* Only support HSE_VALUE: 25MHz.*/
     RCC->CTLR |= 1<<22;
-    while((RCC->CTLR & (1<<23)) == 0);
+    while((RCC->CTLR & (1<<23)) == 0)
+    {
+        Delay_Us(10); 
+        if(!--timeout) break;
+    }
+    if(timeout == 0) printf("Ethernet clock setting failed\r\n");
 }
 
 /*********************************************************************
@@ -416,7 +422,6 @@ void PHY_InterruptInit(void)
  */
 uint32_t ETH_RegInit( ETH_InitTypeDef* ETH_InitStruct, uint16_t PHYAddress )
 {
-    uint16_t tmpreg = 0;
     /* Set the SMI interface clock, set as the main frequency divided by 42  */
     ETH->MACMIIAR = (uint32_t)ETH_MACMIIAR_CR_Div102;
 
@@ -454,9 +459,7 @@ uint32_t ETH_RegInit( ETH_InitTypeDef* ETH_InitStruct, uint16_t PHYAddress )
                     ETH_InitStruct->ETH_ForwardUndersizedGoodFrames);
 
     /* Reset the physical layer */
-    tmpreg = ETH_ReadPHYRegister(PHYAddress, PHY_BCR);
-    tmpreg |= PHY_Reset;
-    ETH_WritePHYRegister(PHYAddress, PHY_BCR, tmpreg);
+    ETH_WritePHYRegister(PHYAddress, PHY_BCR, PHY_Reset);
     return ETH_SUCCESS;
 }
 

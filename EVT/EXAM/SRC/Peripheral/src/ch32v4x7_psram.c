@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
 * File Name          : ch32v4x7_psram.c
 * Author             : WCH
-* Version            : V1.0.1
-* Date               : 2026/06/29
+* Version            : V1.0.3
+* Date               : 2026/10/18
 * Description        : This file provides all the PSRAM firmware functions.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -80,7 +80,7 @@ void PSRAMSetWrLatency(uint32_t Write_Latency)
 {
     uint32_t temp;
     temp=PSRAM->LATENCY;
-    PSRAM->LATENCY=temp&0xffff00ff|(Write_Latency<<8);
+    PSRAM->LATENCY=(temp&0xffff00ff)|(Write_Latency<<8);
  
 }
 
@@ -97,7 +97,7 @@ void PSRAMSetRdLatency(uint32_t Read_Latency)
 {
     uint32_t temp;
     temp=PSRAM->LATENCY;
-    PSRAM->LATENCY=temp&0xffffff00|Read_Latency;
+    PSRAM->LATENCY=(temp&0xffffff00)|Read_Latency;
 }
 /*********************************************************************
  * @fn      PSRAMSetData
@@ -181,8 +181,8 @@ void PSRAM_Set_MW(FunctionalState NewState)
  */
 void PSRAM_Set_CMD(uint8_t CMD)
 {
-    PSRAM->ADDR&=~(0xFF<<8);
-    PSRAM->ADDR|=(CMD<<8);
+    PSRAM->ADDR&=~((uint32_t)0xFF<<8);
+    PSRAM->ADDR|=((uint32_t)CMD<<8);
 }
 
  /*********************************************************************
@@ -222,16 +222,16 @@ void PSRAMDMASet(uint32_t *pBuffer,uint32_t WrReAddr,PSRAMDMATypeDef *PSRAMDMASt
 }
 
 /*********************************************************************
- * @fn      ClearFifoMode
+ * @fn      PSRAMClearFifoMode
  *
  * @brief   PSRAM clear FIFO mode selection 
  *
  * @param   CFIFO - PSRAM_CFIFO_BTWWRRD :The read FIFO is cleared only when the written address matches the address in the read buffer
- *                  PSRAM_CFIFO_WRADD ¡êowriting to any PSRAM address clears the read FIFO 
+ *                  PSRAM_CFIFO_WRADD : writing to any PSRAM address clears the read FIFO 
  *
  * @return  none
  */
-void ClearFifoMode(u8 CFIFO)
+void PSRAMClearFifoMode(u8 CFIFO)
 {
     PSRAM->CTLR&=~(1<<4);
     PSRAM->CTLR|=CFIFO;
@@ -270,11 +270,11 @@ void PSRAM_DMA_CFIFO(FunctionalState NewState)
 {
     if(NewState != DISABLE)
     {
-        PSRAM->CTLR|=(1<<5);
+        PSRAM->CTLR |= (1<<5);
     }
     else
     {
-        PSRAM->CECFG&=~(1<<5);
+        PSRAM->CTLR &= ~(1<<5);
     }
 }
 
@@ -452,8 +452,8 @@ void PSRAM_ClearITPendingBit(uint32_t PSRAM_IT)
  */
 void PSRAM_SyncBur_write_Cmd_Set(uint8_t CMD)
 {
-    PSRAM->CMD0_CFG&=~(0xFF<<24);
-    PSRAM->CMD0_CFG|=CMD<<24;
+    PSRAM->CMD0_CFG&=~((uint32_t)0xFF<<24);
+    PSRAM->CMD0_CFG|=(uint32_t)CMD<<24;
 }
 
 /*********************************************************************
@@ -467,8 +467,8 @@ void PSRAM_SyncBur_write_Cmd_Set(uint8_t CMD)
  */
 void PSRAM_SyncBur_Read_Cmd_Set(uint8_t CMD)
 {
-    PSRAM->CMD0_CFG&=~(0xFF<<16);
-    PSRAM->CMD0_CFG|=CMD<<16;
+    PSRAM->CMD0_CFG&=~((uint32_t)0xFF<<16);
+    PSRAM->CMD0_CFG|=(uint32_t)CMD<<16;
 }
 
 /*********************************************************************
@@ -482,8 +482,8 @@ void PSRAM_SyncBur_Read_Cmd_Set(uint8_t CMD)
  */
 void PSRAM_Sync_write_Cmd_Set(uint8_t CMD)
 {
-    PSRAM->CMD0_CFG&=~(0xFF<<8);
-    PSRAM->CMD0_CFG|=CMD<<8;
+    PSRAM->CMD0_CFG&=~((uint32_t)0xFF<<8);
+    PSRAM->CMD0_CFG|=(uint32_t)CMD<<8;
 }
 
 /*********************************************************************
@@ -497,8 +497,8 @@ void PSRAM_Sync_write_Cmd_Set(uint8_t CMD)
  */
 void PSRAM_Sync_Read_Cmd_Set(uint8_t CMD)
 {
-    PSRAM->CMD0_CFG&=~(0xFF<<0);
-    PSRAM->CMD0_CFG|=CMD<<0;
+    PSRAM->CMD0_CFG&=~((uint32_t)0xFF<<0);
+    PSRAM->CMD0_CFG|=(uint32_t)CMD<<0;
 }
 
 /*********************************************************************
@@ -512,8 +512,8 @@ void PSRAM_Sync_Read_Cmd_Set(uint8_t CMD)
  */
 void PSRAM_Refresh_Cmd_Set(uint8_t CMD)
 {
-    PSRAM->CMD1_CFG&=~(0xFF<<24);
-    PSRAM->CMD1_CFG|=CMD<<24;
+    PSRAM->CMD1_CFG&=~((uint32_t)0xFF<<24);
+    PSRAM->CMD1_CFG|=(uint32_t)CMD<<24;
 }
 
 /*********************************************************************
@@ -527,8 +527,8 @@ void PSRAM_Refresh_Cmd_Set(uint8_t CMD)
  */
 void PSRAM_Global_RST_Cmd_Set(uint8_t CMD)
 {
-    PSRAM->CMD1_CFG&=~(0xFF<<16);
-    PSRAM->CMD1_CFG|=CMD<<16;
+    PSRAM->CMD1_CFG&=~((uint32_t)0xFF<<16);
+    PSRAM->CMD1_CFG|=(uint32_t)CMD<<16;
 }
 
 /*********************************************************************
@@ -542,8 +542,8 @@ void PSRAM_Global_RST_Cmd_Set(uint8_t CMD)
  */
 void PSRAM_WRReg_Cmd_Set(uint8_t CMD)
 {
-    PSRAM->CMD1_CFG&=~(0xFF<<8);
-    PSRAM->CMD1_CFG|=CMD<<8;
+    PSRAM->CMD1_CFG&=~((uint32_t)0xFF<<8);
+    PSRAM->CMD1_CFG|=(uint32_t)CMD<<8;
 }
 
 /*********************************************************************
@@ -557,6 +557,6 @@ void PSRAM_WRReg_Cmd_Set(uint8_t CMD)
  */
 void PSRAM_RDReg_Cmd_Set(uint8_t CMD)
 {
-    PSRAM->CMD1_CFG&=~(0xFF<<0);
-    PSRAM->CMD1_CFG|=CMD<<0;
+    PSRAM->CMD1_CFG&=~((uint32_t)0xFF<<0);
+    PSRAM->CMD1_CFG|=(uint32_t)CMD<<0;
 }

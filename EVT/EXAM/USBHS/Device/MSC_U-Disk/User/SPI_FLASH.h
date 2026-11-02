@@ -1,5 +1,5 @@
 /********************************** (C) COPYRIGHT *******************************
- * File Name          : SPI_FLAH.h
+ * File Name          : SPI_FLASH.h
  * Author             : WCH
  * Version            : V1.0.0
  * Date               : 2026/01/19

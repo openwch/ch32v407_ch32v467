@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.1
-* Date               : 2026/08/27
+* Version            : V1.0.2
+* Date               : 2026/10/16
 * Description        : Main program body
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -77,6 +77,9 @@ void ARGB_WS2812B_Init(size_t buffer_size)
 
 uint32_t temp[3] = {0};
 
+/* Timeout cycles for the polling TXE busy wait (roughly a few ms at 144MHz). */
+#define ARGB_TXE_TIMEOUT 500000
+
 /*********************************************************************
  * @fn      main
  *
@@ -110,7 +113,17 @@ int main(void)
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    while(!ARGB_GetFlagStatus(ARGB_IT_TXE));
+                    /* Busy wait with timeout: exit if the peripheral never
+                     * raises TXE so the main loop cannot get stuck. */
+                    uint32_t timeout = ARGB_TXE_TIMEOUT;
+                    while(!ARGB_GetFlagStatus(ARGB_IT_TXE))
+                    {
+                        if(--timeout == 0)
+                        {
+                            printf("ARGB TXE timeout\r\n");
+                            break;
+                        }
+                    }
                     ARGB_SendData((*ptr)[j]);
                 }
             }

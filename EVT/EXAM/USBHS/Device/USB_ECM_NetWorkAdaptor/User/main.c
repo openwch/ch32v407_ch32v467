@@ -27,7 +27,7 @@
 
 /*What changed: 
  * 1,Update eth-drivers, use the same way as Ethernet Evts.
- * 2,Adjust the writing of other code according to the new stye of eth-drivers;
+ * 2,Adjust the writing of other code according to the new style of eth-drivers;
  * */
 
 #include "cdc_ecm.h"
@@ -53,12 +53,6 @@ int main(void)
 
     /* MAC&Phy Initialize */
     ETH_GetMacAddr( MACAddr );
-        MACAddr[0] = 0x50;
-    MACAddr[1] = 0x54;
-    MACAddr[2] = 0x7B;
-    MACAddr[3] = 0x43;
-    MACAddr[4] = 0x84;
-    MACAddr[5] = 0x8A;
     printf( "MAC address:" );
     for( i=0; i<6; i++ )
     {

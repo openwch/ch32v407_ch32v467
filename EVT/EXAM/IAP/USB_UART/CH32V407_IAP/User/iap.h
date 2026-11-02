@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
 * File Name          : iap.h
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/12/01
+* Version            : V1.0.1
+* Date               : 2026/10/15
 * Description        : IAP
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -35,7 +35,7 @@
 #define ERR_ERROR         0x01
 #define ERR_End           0x02
 
-#define CalAddr           (0x080F8000-4)
+#define CalAddr           (0x08078000-4)
 #define CheckNum          (0x5aa55aa5)
 
 typedef union __attribute__ ((aligned(4)))_ISP_CMD {

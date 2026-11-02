@@ -303,6 +303,11 @@ void USBHS_IRQHandler(void)
                         {
                             case DEF_NCM_GET_NTB_PARAMETERS:
                                 /* 0x80: GetNtbParameters */
+                                USBHS_SetupReqLen = ( USBHS_SetupReqLen > sizeof( NTB_Parameter_Structure ) ) ? sizeof( NTB_Parameter_Structure ) : USBHS_SetupReqLen;
+                                if( USBHS_SetupReqLen > DEF_USBD_UEP0_SIZE )
+                                {
+                                    USBHS_SetupReqLen = DEF_USBD_UEP0_SIZE;
+                                }
                                 memcpy( USBHS_EP0_Buf, NTB_Parameter_Structure, USBHS_SetupReqLen );
                                 break;
 
@@ -600,6 +605,10 @@ void USBHS_IRQHandler(void)
                                         errflag = 0xFF;
                                         break;
                                     }
+                                }
+                                else
+                                {
+                                    errflag = 0xFF;
                                 }
                             }
                             break;

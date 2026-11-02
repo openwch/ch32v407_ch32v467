@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
 * File Name          : ch32v4x7_psram.c
 * Author             : WCH
-* Version            : V1.0.1
-* Date               : 2026/06/30
+* Version            : V1.0.2
+* Date               : 2026/10/16
 * Description        : This file provides all the PSRAM firmware functions.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -86,17 +86,11 @@ uint32_t PSRAMReadReg(uint32_t Addr)
  *
  * @brief   PSRAM set write Latency
  *
- * @param   PSRAM_Fre -  MR4_Write_66M    
-                         MR4_Write_109M      
+ * @param   PSRAM_Fre -     
                          MR4_Write_133M      
                          MR4_Write_166M       
                          MR4_Write_200M     
-                         MR4_Write_225M       
-                         MR4_Write_250M       
-                         MR4_Write_300M      
-                         MR4_Write_333M       
-                         MR4_Write_400M      
-                       
+
  *          Write_Latency - Write Latency.
  *
  * @return  none
@@ -111,16 +105,6 @@ void SetWrLatency(uint32_t PSRAM_Fre, uint32_t Write_Latency)
     PSRAM_Set_MW(ENABLE);
     Wait_Busy_0();
 
-    if((PSRAM_Fre==MR4_Write_333M)|(PSRAM_Fre==MR4_Write_400M))
-    {
-    //High frequency latency enable for 333Mhz/400MHz .
-    PSRAMSetData(Hfreq_En<<5);
-    PSRAM_Set_MR_ADDR(CMD_MR_ADDR_8);
-    PSRAM_Set_CMD(CMD_MR_WRITE);
-    PSRAM_Set_Busy(ENABLE);
-    PSRAM_Set_MW(ENABLE);
-    Wait_Busy_0();
-    }
 }
 
 /*********************************************************************
@@ -128,16 +112,10 @@ void SetWrLatency(uint32_t PSRAM_Fre, uint32_t Write_Latency)
  *
  * @brief   PSRAM set read Latency
  *
- * @param   PSRAM_Fre - MR0_Read_66M       
-                        MR0_Read_109M        
+ * @param   PSRAM_Fre -        
                         MR0_Read_133M     
                         MR0_Read_166M       
-                        MR0_Read_200M        
-                        MR0_Read_225M 
-                        MR0_Read_250M       
-                        MR0_Read_300M      
-                        MR0_Read_333M       
-                        MR0_Read_400M        
+                        MR0_Read_200M           
  *          Write_Latency - read Latency.
  *
  * @return  none
@@ -151,27 +129,7 @@ void SetRdLatency(uint32_t PSRAM_Fre, uint32_t Read_Latency,uint32_t Read_Latenc
     PSRAM_Set_Busy(ENABLE);
     PSRAM_Set_MW(ENABLE);
     Wait_Busy_0();
-//High frequency latency enable for 333Mhz .
-   if((PSRAM_Fre==MR0_Read_333M)|(PSRAM_Fre==MR0_Read_400M))
-   {
-    PSRAMSetData(Hfreq_En<<5);
-    PSRAM_Set_MR_ADDR(CMD_MR_ADDR_8);
-    PSRAM_Set_CMD(CMD_MR_WRITE);
-    PSRAM_Set_Busy(ENABLE);
-    PSRAM_Set_MW(ENABLE);
-    Wait_Busy_0();
-    }
-    if(Read_Latency_Type==Read_Fixed)
-    {
-    PSRAMSetData(Read_Fixed<<5);
-    PSRAMSetRdLatency(Read_Latency);
-    PSRAM_Set_MR_ADDR(CMD_MR_ADDR_0);
-    PSRAM_Set_CMD(CMD_MR_WRITE);
-    PSRAM_Set_Busy(ENABLE);
-    PSRAM_Set_MW(CMD_MW_Write);
-    Wait_Busy_0();
 
-    }
 }
 
 /*********************************************************************

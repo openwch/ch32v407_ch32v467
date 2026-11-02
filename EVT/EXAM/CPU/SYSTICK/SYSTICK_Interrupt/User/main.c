@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/12/01
+* Version            : V1.0.1
+* Date               : 2026/10/15
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -79,8 +79,9 @@ void SysTick_Handler(void)
     if(SysTick->SR == 1)
     {
         SysTick->SR = 0;//clear State flag
-        printf("welcome to WCH\r\n");
         counter++;
+        #if 0
         printf("Counter:%d\r\n",counter);
+        #endif
     }
 }

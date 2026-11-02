@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2025/12/01
+* Version            : V1.0.1
+* Date               : 2026/10/19
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -49,7 +49,7 @@ void ADC_Function_Init(void)
     ADC_DeInit(ADC1);
     ADC_DeInit(ADC2);
 
-    ADC_InitStructure.ADC_Mode = ADC_Mode_RegInjecSimult;
+    ADC_InitStructure.ADC_Mode = ADC_Mode_InjecSimult;
     ADC_InitStructure.ADC_ScanConvMode = DISABLE;
     ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;
     ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;

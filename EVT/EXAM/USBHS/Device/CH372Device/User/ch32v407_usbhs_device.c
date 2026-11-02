@@ -60,7 +60,6 @@ __attribute__((aligned(4))) uint8_t Data_Buffer[DEF_RING_BUFFER_SIZE];
 /* Interrupt Service Routine Declaration*/
 void USBHS_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
-
 /*********************************************************************
  * @fn      USB_TestMode_Deal
  *
@@ -75,25 +74,25 @@ void USB_TestMode_Deal(void)
     /* start test */
     USBHS_Test_Flag &= ~0x80;
     *(volatile uint32_t *)0x40022048 &= ~0x000C0003;
-    if(USBHS_SetupReqIndex == 0x0100)
+    if (USBHS_SetupReqIndex == 0x0100)
     {
         /* Test_J */
         USBHSD->TEST_MODE &= ~TEST_MASK;
         USBHSD->TEST_MODE |= USBHS_UD_TEST_J;
     }
-    else if(USBHS_SetupReqIndex == 0x0200)
+    else if (USBHS_SetupReqIndex == 0x0200)
     {
         /* Test_K */
         USBHSD->TEST_MODE &= ~TEST_MASK;
         USBHSD->TEST_MODE |= USBHS_UD_TEST_K;
     }
-    else if(USBHS_SetupReqIndex == 0x0300)
+    else if (USBHS_SetupReqIndex == 0x0300)
     {
         /* Test_SE0_NAK */
         USBHSD->TEST_MODE &= ~TEST_MASK;
         USBHSD->TEST_MODE |= USBHS_UD_TEST_SE0NAK;
     }
-    else if(USBHS_SetupReqIndex == 0x0400)
+    else if (USBHS_SetupReqIndex == 0x0400)
     {
         /* Test_Packet */
         USBHSD->TEST_MODE &= ~TEST_MASK;
@@ -105,7 +104,6 @@ void USB_TestMode_Deal(void)
     USBHSD->TEST_MODE |= USBHS_UD_TEST_EN;
 #endif
 }
-
 
 /*********************************************************************
  * @fn      USBHS_Device_Endp_Init
@@ -573,6 +571,10 @@ void USBHS_IRQHandler(void)
                                         errflag = 0xFF;
                                         break;
                                     }
+                                }
+                                else
+                                {
+                                    errflag = 0xFF;
                                 }
                             }
                             break;
